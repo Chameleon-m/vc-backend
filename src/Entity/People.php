@@ -30,12 +30,6 @@ class People
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $address_residental;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $address_last;
-
-    #[ORM\Column(type: 'date_immutable', nullable: true)]
-    private $address_last_date;
-
     #[ORM\Column(type: 'string', length: 255)]
     private $contacts;
 
@@ -104,30 +98,6 @@ class People
     public function setAddressResidental(?string $address_residental): self
     {
         $this->address_residental = $address_residental;
-
-        return $this;
-    }
-
-    public function getAddressLast(): ?string
-    {
-        return $this->address_last;
-    }
-
-    public function setAddressLast(?string $address_last): self
-    {
-        $this->address_last = $address_last;
-
-        return $this;
-    }
-
-    public function getAddressLastDate(): ?\DateTimeImmutable
-    {
-        return $this->address_last_date;
-    }
-
-    public function setAddressLastDate(?\DateTimeImmutable $address_last_date): self
-    {
-        $this->address_last_date = $address_last_date;
 
         return $this;
     }
@@ -244,5 +214,10 @@ class People
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->first_name . ' ' . $this->second_name . ' ' . $this->middle_name;
     }
 }

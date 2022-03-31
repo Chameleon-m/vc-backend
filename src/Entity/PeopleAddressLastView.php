@@ -123,4 +123,9 @@ class PeopleAddressLastView
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->locality_value . ' ' . $this->address;
+    }
 }
