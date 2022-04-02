@@ -55,7 +55,8 @@ class PeoplePhotoCrudController extends AbstractCrudController
         yield ImageField::new('filename', 'Фото')
             ->setBasePath($this->uploadBasePath . $this->peoplePhotoDir)
             ->setUploadDir($this->uploadDir . $this->peoplePhotoDir)
-            ->setUploadedFileNamePattern('[randomhash].[extension]');
+            ->setUploadedFileNamePattern('[randomhash].[extension]')
+            ->onlyOnIndex();
 
         yield IntegerField::new('priority', 'Очерёдность');
     }

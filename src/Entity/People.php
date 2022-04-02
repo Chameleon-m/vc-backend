@@ -6,8 +6,13 @@ use App\Repository\PeopleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity('slug')]
 class People
 {
     #[ORM\Id]
@@ -16,9 +21,11 @@ class People
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private $first_name;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private $second_name;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -31,6 +38,7 @@ class People
     private $address_residental;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private $contacts;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhone::class, orphanRemoval: true)]
@@ -41,6 +49,12 @@ class People
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, orphanRemoval: true)]
     private $last_view_addresses;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $createdAt;
+
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private $slug;
 
     public function __construct()
     {
@@ -219,5 +233,42 @@ class People
     public function __toString(): string
     {
         return $this->first_name . ' ' . $this->second_name . ' ' . $this->middle_name;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function computeSlug(SluggerInterface $slugger)
+    {
+        if (!$this->slug || '-' === $this->slug) {
+            $this->slug = (string) $slugger->slug((string) $this)->lower();
+        }
     }
 }
