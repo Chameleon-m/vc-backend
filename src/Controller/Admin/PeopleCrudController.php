@@ -6,6 +6,8 @@ use App\Entity\People;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -47,9 +49,18 @@ class PeopleCrudController extends AbstractCrudController
             'widget' => 'single_text',
         ]);
         yield TextField::new('address_residental', 'Место проживания')
-        ->setHelp('Где человек проживал постоянно.');
-        yield TextField::new('contacts', 'Контакты для связи')
-        ->setHelp('Можно укзать несколько номеров, почт и т.п через запятую');
+            ->setHelp('Где человек проживал постоянно.');
+        yield ArrayField::new('contacts', 'Контакты для связи')
+            ->setHelp('Можно укзать номер, почту, соцсеть и другие контакты');
+        yield ChoiceField::new('state', 'Состояние')
+            ->setChoices([
+                'submitted' => 'submitted',
+                'spam' => 'spam',
+                'potential_spam' => 'potential_spam',
+                'ham' => 'ham',
+                'reject' => 'reject',
+                'published' => 'published',
+            ]);
 
     }
 }

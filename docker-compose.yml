@@ -20,7 +20,8 @@ services:
   rabbitmq:
     image: rabbitmq:${RABBITMQ_VERSION:-3.9.14}-management
     ports:
-      - "5672:15672"
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}

@@ -6,6 +6,7 @@ use App\Entity\People;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,6 +17,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PeopleRepository extends ServiceEntityRepository
 {
+    private const DAYS_BEFORE_REJECTED_REMOVAL = 7;
+
+    public const PAGINATOR_PER_PAGE = 10;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, People::class);
@@ -43,6 +48,20 @@ class PeopleRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function findStatePublished(int $offset): Paginator
+    {
+        $query = $this->createQueryBuilder('p')
+            ->andWhere('c.state = :state')
+            ->setParameter('state', 'published')
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults(self::PAGINATOR_PER_PAGE)
+            ->setFirstResult($offset)
+            ->getQuery()
+        ;
+
+        return new Paginator($query);
     }
 
     // /**

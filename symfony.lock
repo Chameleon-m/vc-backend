@@ -225,6 +225,9 @@
     "sebastian/version": {
         "version": "3.0.2"
     },
+    "symfony/amqp-messenger": {
+        "version": "v6.0.7"
+    },
     "symfony/asset": {
         "version": "v6.0.3"
     },
@@ -255,6 +258,18 @@
     "symfony/css-selector": {
         "version": "v6.0.3"
     },
+    "symfony/debug-bundle": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.3",
+            "ref": "5aa8aa48234c8eb6dbdd7b3cd5d791485d2cec4b"
+        },
+        "files": [
+            "config/packages/debug.yaml"
+        ]
+    },
     "symfony/dependency-injection": {
         "version": "v6.0.6"
     },
@@ -263,6 +278,9 @@
     },
     "symfony/doctrine-bridge": {
         "version": "v6.0.6"
+    },
+    "symfony/doctrine-messenger": {
+        "version": "v6.0.7"
     },
     "symfony/dom-crawler": {
         "version": "v6.0.6"
@@ -342,6 +360,18 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/messenger": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "25e3c964d3aee480b3acc3114ffb7940c89edfed"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
+        ]
     },
     "symfony/mime": {
         "version": "v6.0.3"
@@ -522,6 +552,19 @@
     },
     "symfony/web-link": {
         "version": "v6.0.3"
+    },
+    "symfony/web-profiler-bundle": {
+        "version": "6.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.3",
+            "ref": "24bbc3d84ef2f427f82104f766014e799eefcc3e"
+        },
+        "files": [
+            "config/packages/web_profiler.yaml",
+            "config/routes/web_profiler.yaml"
+        ]
     },
     "symfony/yaml": {
         "version": "v6.0.3"

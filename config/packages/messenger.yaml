@@ -1,0 +1,44 @@
+framework:
+  messenger:
+    # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+#    failure_transport: failed
+
+    serializer:
+      default_serializer: messenger.transport.symfony_serializer
+      symfony_serializer:
+        format: json
+        context: { }
+
+    transports:
+      async:
+        dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
+
+      # https://symfony.com/doc/current/messenger.html#transport-configuration
+      async_people:
+        dsn: '%env(RABBITMQ_URL)%'
+#        failure_transport: failed_people
+        serializer: messenger.transport.symfony_serializer
+        options:
+          auto_setup: true
+          persistent: false // ?mb true
+#          read_timeout:
+#          write_timeout:
+          # for AMQP send to a separate exchange then queue
+          exchange:
+          name: state
+        retry_strategy:
+          max_retries: 3
+          multiplier: 2
+
+#      failed: 'doctrine://default?queue_name=failed'
+#      failed_people:
+#        dsn: '%env(RABBITMQ_URL)%'
+
+      # sync: 'sync://'
+
+    routing:
+#      Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+#      Symfony\Component\Notifier\Message\ChatMessage: async
+#      Symfony\Component\Notifier\Message\SmsMessage: async
+
+      App\Message\PeopleStateMessage: async_people

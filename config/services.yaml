@@ -32,3 +32,4 @@ services:
         tags:
             - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\People' }
             - { name: 'doctrine.orm.entity_listener', event: 'preUpdate', entity: 'App\Entity\People' }
+            - { name: 'doctrine.orm.entity_listener', event: 'postPersist', entity: 'App\Entity\People' }

@@ -37,7 +37,7 @@ class People
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $address_residental;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'json')]
     #[Assert\NotBlank]
     private $contacts;
 
@@ -55,6 +55,9 @@ class People
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private $slug;
+
+    #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
+    private $state = 'submitted';
 
     public function __construct()
     {
@@ -116,12 +119,12 @@ class People
         return $this;
     }
 
-    public function getContacts(): ?string
+    public function getContacts(): array
     {
         return $this->contacts;
     }
 
-    public function setContacts(string $contacts): self
+    public function setContacts(array $contacts): self
     {
         $this->contacts = $contacts;
 
@@ -270,5 +273,17 @@ class People
         if (!$this->slug || '-' === $this->slug) {
             $this->slug = (string) $slugger->slug((string) $this)->lower();
         }
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): self
+    {
+        $this->state = $state;
+
+        return $this;
     }
 }
