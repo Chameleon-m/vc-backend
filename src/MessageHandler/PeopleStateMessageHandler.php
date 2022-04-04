@@ -35,8 +35,11 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
 
     public function __invoke(PeopleStateMessage $message)
     {
-        $people = $this->peopleRepository->find($message->getId());
+        $peopleId = $message->getId();
+
+        $people = $this->peopleRepository->find($peopleId);
         if (!$people) {
+            $this->logger?->alert(sprintf('People %d was missing!', $peopleId));
             return;
         }
 
@@ -64,7 +67,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             $this->workflow->apply($people, 'publish_ham');
             $this->entityManager->flush();
         } elseif ($this->logger) {
-            $this->logger->debug('Dropping people message', ['comment' => $people->getId(), 'state' => $people->getState()]);
+            $this->logger->debug('Dropping people message', ['people' => $people->getId(), 'state' => $people->getState()]);
         }
     }
 }

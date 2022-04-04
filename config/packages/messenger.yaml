@@ -1,5 +1,11 @@
 framework:
   messenger:
+    enabled: true
+    default_bus: messenger.bus.default
+    # https://symfony.com/doc/current/messenger.html#middleware
+#    buses:
+#      event.bus: ~
+
     # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
 #    failure_transport: failed
 
@@ -14,6 +20,7 @@ framework:
         dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
 
       # https://symfony.com/doc/current/messenger.html#transport-configuration
+      # Symfony\Component\Messenger\Bridge\Amqp\Transport\Connection
       async_people:
         dsn: '%env(RABBITMQ_URL)%'
 #        failure_transport: failed_people
@@ -25,10 +32,17 @@ framework:
 #          write_timeout:
           # for AMQP send to a separate exchange then queue
           exchange:
-          name: state
+            name: state
         retry_strategy:
+          # Service id to override the retry strategy entirely
+          service: null
           max_retries: 3
+          # Time in ms to delay (or the initial value when multiplier is used)
+          delay: 1000
+          # If greater than 1, delay will grow exponentially for each retry: this delay = (delay * (multiple ^ retries))
           multiplier: 2
+          # Max time in ms that a retry should ever be delayed (0 = infinite)
+          max_delay: 0
 
 #      failed: 'doctrine://default?queue_name=failed'
 #      failed_people:
