@@ -2,6 +2,8 @@ framework:
     workflows:
         people:
             type: state_machine
+            # pass an empty array to not dispatch any event
+#            events_to_dispatch: []
             audit_trail:
                 enabled: "%kernel.debug%"
             marking_store:
