@@ -53,9 +53,9 @@ class PeopleRepository extends ServiceEntityRepository
     public function findStatePublished(int $offset): Paginator
     {
         $query = $this->createQueryBuilder('p')
-            ->andWhere('c.state = :state')
+            ->andWhere('p.state = :state')
             ->setParameter('state', 'published')
-            ->orderBy('c.createdAt', 'DESC')
+            ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults(self::PAGINATOR_PER_PAGE)
             ->setFirstResult($offset)
             ->getQuery()
