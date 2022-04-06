@@ -39,3 +39,5 @@ services:
             - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\People' }
             - { name: 'doctrine.orm.entity_listener', event: 'preUpdate', entity: 'App\Entity\People' }
             - { name: 'doctrine.orm.entity_listener', event: 'postPersist', entity: 'App\Entity\People' }
+
+    Symfony\Component\HttpKernel\HttpCache\StoreInterface: '@http_cache.store'

@@ -8,10 +8,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Workflow\Registry;
 
+//#[Route('/admin')]
 class AdminController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
@@ -52,5 +55,17 @@ class AdminController extends AbstractController
             'transition' => $transition,
             'people' => $people->getId(),
         ]);
+    }
+
+    #[Route('/admin/http-cache/{uri<.*>}', methods: ['PURGE'])]
+    public function purgeHttpCache(KernelInterface $kernel, Request $request, string $uri, StoreInterface $store): Response
+    {
+        if ('prod' === $kernel->getEnvironment()) {
+            return $this->json(['status' => 'error', 'message' => 'KO', 400]);
+        }
+
+        $store->purge($request->getSchemeAndHttpHost().'/'.$uri);
+
+        return $this->json(['status' => 'ok']);
     }
 }
