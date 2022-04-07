@@ -25,3 +25,16 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+
+#  varnish:
+#    image: varnish:7.1-alpine
+#    environment:
+#      VARNISH_SIZE: 100M
+#    ports:
+#      - "8080:80"
+##      - "8443:80"
+#    tmpfs:
+#      - /var/lib/varnish/varnishd:exec
+##      - ./var/lib/varnish/varnishd:exec
+#    volumes:
+#      - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl:ro
