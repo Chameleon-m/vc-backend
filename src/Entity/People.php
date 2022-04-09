@@ -2,61 +2,82 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\PeopleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('slug')]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'people:list']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'people:item']]],
+    order: ['id' => 'DESC'],
+    paginationEnabled: false,
+)]
 class People
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['people:list', 'people:item'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['people:list', 'people:item'])]
     private $first_name;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['people:list', 'people:item'])]
     private $second_name;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $middle_name;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $birthday_date;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $address_residental;
 
     #[ORM\Column(type: 'json')]
     #[Assert\NotBlank]
+    #[Groups(['people:list', 'people:item'])]
     private $contacts;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhone::class, orphanRemoval: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $phones;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhoto::class, orphanRemoval: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $photos;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, orphanRemoval: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $last_view_addresses;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['people:list', 'people:item'])]
     private $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Groups(['people:list', 'people:item'])]
     private $slug;
 
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
+    #[Groups(['people:list', 'people:item'])]
     private $state = 'submitted';
 
     public function __construct()
