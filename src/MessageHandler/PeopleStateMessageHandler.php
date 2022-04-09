@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Service\ImageOptimizer;
 use App\Message\PeopleStateMessage;
 use App\Repository\PeopleRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,8 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
     private PeopleRepository $peopleRepository;
     private MessageBusInterface $bus;
     private WorkflowInterface $workflow;
+    private ImageOptimizer $imageOptimizer;
+    private string $peoplePhotoDirRealPath;
     private ?LoggerInterface $logger;
 
     public function __construct(
@@ -23,6 +26,8 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         PeopleRepository       $peopleRepository,
         MessageBusInterface    $bus,
         WorkflowInterface      $peopleStateMachine,
+        ImageOptimizer         $imageOptimizer,
+        string                 $peoplePhotoDirRealPath,
         LoggerInterface        $logger = null
     )
     {
@@ -30,6 +35,8 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         $this->peopleRepository = $peopleRepository;
         $this->bus = $bus;
         $this->workflow = $peopleStateMachine;
+        $this->imageOptimizer = $imageOptimizer;
+        $this->peoplePhotoDirRealPath = $peoplePhotoDirRealPath;
         $this->logger = $logger;
     }
 
@@ -65,6 +72,15 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             $this->entityManager->flush();
         } elseif ($this->workflow->can($people, 'publish_ham')) {
             $this->workflow->apply($people, 'publish_ham');
+            $this->entityManager->flush();
+        } elseif ($this->workflow->can($people, 'optimize')) {
+            $photos = $people->getPhotos();
+            if (!$photos->isEmpty()) {
+                foreach ($photos as $photo) {
+                    $this->imageOptimizer->resize($this->peoplePhotoDirRealPath.'/'.$photo->getFilename());
+                }
+            }
+            $this->workflow->apply($people, 'optimize');
             $this->entityManager->flush();
         } elseif ($this->logger) {
             $this->logger->debug('Dropping people message', ['people' => $people->getId(), 'state' => $people->getState()]);
