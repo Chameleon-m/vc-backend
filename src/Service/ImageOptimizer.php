@@ -19,12 +19,14 @@ class ImageOptimizer
 
     /**
      * @param string $filename
+     * @param string $saveFilename
      * @return void
      * @throws \Imagine\Exception\RuntimeException
      */
-    public function resize(string $filename): void
+    public function resize(string $filename, string $saveFilename): void
     {
         $info = new \SplFileInfo($filename);
+//        $infoSave = new \SplFileInfo($saveFilename);
 //        $info->setInfoClass();
 // RuntimeException
 //        $groupID = $info->getGroup();
@@ -65,6 +67,6 @@ class ImageOptimizer
         $photo = $this->imagine->open($filename);
         $photo
             ->resize(new Box($width, $height))
-            ->save($filename);
+            ->save($saveFilename);
     }
 }

@@ -77,7 +77,9 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             $photos = $people->getPhotos();
             if (!$photos->isEmpty()) {
                 foreach ($photos as $photo) {
-                    $this->imageOptimizer->resize($this->peoplePhotoDirRealPath.'/'.$photo->getFilename());
+                    $photoPath = $this->peoplePhotoDirRealPath . '/' . $photo->getFilename();
+                    $photoResizePath = $this->peoplePhotoDirRealPath . '/resize_' . $photo->getFilename();
+                    $this->imageOptimizer->resize($photoPath, $photoResizePath);
                 }
             }
             $this->workflow->apply($people, 'optimize');
