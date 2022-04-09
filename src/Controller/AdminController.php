@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Workflow\Registry;
 
 //#[Route('/admin')]
@@ -27,7 +28,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/people/review/{id}', name: 'review_people')]
-    public function reviewComment(Request $request, People $people, Registry $registry): Response
+    public function reviewPeople(Request $request, People $people, Registry $registry): Response
     {
         $accepted = !$request->query->get('reject');
 
@@ -47,7 +48,8 @@ class AdminController extends AbstractController
         $this->entityManager->flush();
 
         if ($accepted) {
-            $this->bus->dispatch(new PeopleStateMessage($people->getId()));
+            $reviewUrl = $this->generateUrl('review_people', ['id' => $people->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+            $this->bus->dispatch(new PeopleStateMessage($people->getId(), $reviewUrl));
         }
 
         return $this->json([

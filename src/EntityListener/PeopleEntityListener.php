@@ -7,16 +7,22 @@ use App\Message\PeopleStateMessage;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PeopleEntityListener
 {
     private SluggerInterface $slugger;
     private MessageBusInterface $bus;
+    private UrlGeneratorInterface $router;
 
-    public function __construct(SluggerInterface $slugger, MessageBusInterface $bus)
-    {
+    public function __construct(
+        SluggerInterface $slugger,
+        MessageBusInterface $bus,
+        UrlGeneratorInterface $router
+    ) {
         $this->slugger = $slugger;
         $this->bus = $bus;
+        $this->router = $router;
     }
 
     public function prePersist(People $people, LifecycleEventArgs $event): void
@@ -26,7 +32,8 @@ class PeopleEntityListener
 
     public function postPersist(People $people, LifecycleEventArgs $event): void
     {
-        $this->bus->dispatch(new PeopleStateMessage($people->getId()));
+        $reviewUrl = $this->router->generate('review_people', ['id' => $people->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $this->bus->dispatch(new PeopleStateMessage($people->getId(), $reviewUrl));
     }
 
     public function preUpdate(People $people, LifecycleEventArgs $event): void

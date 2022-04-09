@@ -4,11 +4,13 @@ namespace App\MessageHandler;
 
 use App\Service\ImageOptimizer;
 use App\Message\PeopleStateMessage;
+use App\Notification\PeopleReviewNotification;
 use App\Repository\PeopleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 final class PeopleStateMessageHandler implements MessageHandlerInterface
@@ -17,6 +19,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
     private PeopleRepository $peopleRepository;
     private MessageBusInterface $bus;
     private WorkflowInterface $workflow;
+    private NotifierInterface $notifier;
     private ImageOptimizer $imageOptimizer;
     private string $peoplePhotoDirRealPath;
     private ?LoggerInterface $logger;
@@ -26,6 +29,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         PeopleRepository       $peopleRepository,
         MessageBusInterface    $bus,
         WorkflowInterface      $peopleStateMachine,
+        NotifierInterface      $notifier,
         ImageOptimizer         $imageOptimizer,
         string                 $peoplePhotoDirRealPath,
         LoggerInterface        $logger = null
@@ -35,6 +39,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         $this->peopleRepository = $peopleRepository;
         $this->bus = $bus;
         $this->workflow = $peopleStateMachine;
+        $this->notifier = $notifier;
         $this->imageOptimizer = $imageOptimizer;
         $this->peoplePhotoDirRealPath = $peoplePhotoDirRealPath;
         $this->logger = $logger;
@@ -68,11 +73,17 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             $this->bus->dispatch($message);
 
         } elseif ($this->workflow->can($people, 'publish')) {
-            $this->workflow->apply($people, 'publish');
-            $this->entityManager->flush();
+            $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
+            $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
+//            $this->workflow->apply($people, 'publish');
+//            $this->entityManager->flush();
+
         } elseif ($this->workflow->can($people, 'publish_ham')) {
-            $this->workflow->apply($people, 'publish_ham');
-            $this->entityManager->flush();
+            $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
+            $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
+//            $this->workflow->apply($people, 'publish_ham');
+//            $this->entityManager->flush();
+
         } elseif ($this->workflow->can($people, 'optimize')) {
             $photos = $people->getPhotos();
             if (!$photos->isEmpty()) {
@@ -84,6 +95,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             }
             $this->workflow->apply($people, 'optimize');
             $this->entityManager->flush();
+
         } elseif ($this->logger) {
             $this->logger->debug('Dropping people message', ['people' => $people->getId(), 'state' => $people->getState()]);
         }
