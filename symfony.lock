@@ -109,8 +109,23 @@
     "laminas/laminas-code": {
         "version": "4.5.1"
     },
+    "monolog/monolog": {
+        "version": "2.5.0"
+    },
     "myclabs/deep-copy": {
         "version": "1.11.0"
+    },
+    "nelmio/cors-bundle": {
+        "version": "2.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.5",
+            "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
+        },
+        "files": [
+            "config/packages/nelmio_cors.yaml"
+        ]
     },
     "nikic/php-parser": {
         "version": "v4.13.2"
@@ -378,6 +393,21 @@
     },
     "symfony/mime": {
         "version": "v6.0.3"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v6.0.3"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.7",
+            "ref": "213676c4ec929f046dfde5ea8e97625b81bc0578"
+        },
+        "files": [
+            "config/packages/monolog.yaml"
+        ]
     },
     "symfony/notifier": {
         "version": "6.0",
