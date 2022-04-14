@@ -1,7 +1,49 @@
+# symfony console debug:config api_platform
+# symfony console config:dump api_platform
 api_platform:
+
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     patch_formats:
         json: ['application/merge-patch+json']
     swagger:
         versions: [3]
+    version: 0.0.0
+#    show_webby: true
+#    doctrine:
+#        enabled: true
+#    doctrine_mongodb_odm:
+#        enabled: false
+#    oauth:
+#        enabled: false
+#        clientId: ''
+#        clientSecret: ''
+#        type: oauth2
+#        flow: application
+#        tokenUrl: ''
+#        authorizationUrl: ''
+#        refreshUrl: ''
+#        scopes: { }
+#
+#    messenger:
+#        enabled: true
+#    elasticsearch:
+#        enabled: false
+#        hosts: {  }
+#        mapping:
+#            # Prototype
+#            resource_class:
+#                index: null
+#                type: _doc
+#    formats:
+#        json:
+#            mime_types:
+#                - application/json
+
+#    http_cache:
+#        public: null
+#        invalidation:
+#            enabled: false
+#            varnish_urls: { }
+#            max_header_length: 7500
+#            request_options: { }

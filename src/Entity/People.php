@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\PeopleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,26 +20,71 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('slug')]
 #[ApiResource(
-    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'people:list']]],
-    itemOperations: ['get' => ['normalization_context' => ['groups' => 'people:item']]],
+    collectionOperations: [
+        'get' => [
+            'normalization_context' => ['groups' => 'people:list'],
+            'denormalization_context' => ['groups' => 'people:list'],
+        ],
+        'post' => [
+            'security' => "is_granted('ROLE_USER')"
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'normalization_context' => ['groups' => 'people:item'],
+            'denormalization_context' => ['groups' => 'people:item']
+        ],
+        'put' => [
+            'security' => "is_granted('ROLE_USER')"
+        ],
+        'delete' => [
+            'security' => "is_granted('ROLE_ADMIN')"
+        ],
+        'patch' => [
+            'security' => "is_granted('ROLE_USER')"
+        ]
+    ],
+    attributes: [
+        'pagination_items_per_page' => 10,
+        'formats' => ["jsonld", "json", "html", "csv" => ["text/csv"]]
+    ],
     order: ['id' => 'DESC'],
-    paginationEnabled: false,
+    paginationEnabled: true
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+//        'first_name' => 'start',
+        'first_name' => 'exact',
+        'second_name' => 'exact',
+        'middle_name' => 'exact',
+        'last_view_addresses.address' => 'partial'
+    ],
 )]
 class People
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[ApiProperty(identifier: true)]
     #[Groups(['people:list', 'people:item'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+//        minMessage: '',
+//        maxMessage: ''
+    )]
     #[Groups(['people:list', 'people:item'])]
     private $first_name;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
     #[Groups(['people:list', 'people:item'])]
     private $second_name;
 
@@ -64,7 +113,9 @@ class People
     #[Groups(['people:list', 'people:item'])]
     private $photos;
 
-    #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, cascade: ['persist'], orphanRemoval: true)]
+    #[Assert\Valid]
+    #[ApiSubresource]
     #[Groups(['people:list', 'people:item'])]
     private $last_view_addresses;
 
@@ -79,6 +130,10 @@ class People
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
     #[Groups(['people:list', 'people:item'])]
     private $state = 'submitted';
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $owner;
 
     public function __construct()
     {
@@ -304,6 +359,18 @@ class People
     public function setState(string $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

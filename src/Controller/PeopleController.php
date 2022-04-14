@@ -7,17 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class PeopleController extends AbstractController
 {
-    #[Route('/people', name: 'people_index')]
-    public function index(): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Welcome!',
-        ]);
-    }
-
     #[Route('/people/last', name: 'people_last')]
     public function last(Request $request, PeopleRepository $peopleRepository): JsonResponse
     {

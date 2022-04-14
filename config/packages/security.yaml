@@ -5,36 +5,70 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
         App\Entity\Admin:
             algorithm: auto
+        App\Entity\User:
+            algorithm: auto
+
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        app_admin_provider:
             entity:
                 class: App\Entity\Admin
                 property: email
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+        # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        admin:
             lazy: true
-            provider: app_user_provider
+#            pattern: ^/admin
+            provider: app_admin_provider
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout
+                target: app_login
+        main:
+#            anonymous: true
+
+            lazy: true
+            pattern: ^/api
+            provider: app_user_provider
+            logout:
+                path: api_logout
+                # where to redirect after logout
                 # target: app_any_route
+
+            json_login:
+                # https://symfony.com/doc/current/reference/configuration/security.html#json-login-authentication
+                check_path: app_api_login
+                username_path: identifier
+                password_path: password
+
+            login_throttling:
+                max_attempts: 3
+#                interval: '15 minutes'
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
+# https://symfony.com/doc/current/security.html#hierarchical-roles
+#    role_hierarchy:
+#        ROLE_ADMIN:       ROLE_USER
+#        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
