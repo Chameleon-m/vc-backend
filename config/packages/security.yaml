@@ -26,7 +26,7 @@ security:
             security: false
         admin:
             lazy: true
-#            pattern: ^/admin
+            pattern: ^/admin
             provider: app_admin_provider
             custom_authenticator: App\Security\AppAuthenticator
             logout:
@@ -46,12 +46,12 @@ security:
 
             json_login:
                 # https://symfony.com/doc/current/reference/configuration/security.html#json-login-authentication
-                check_path: app_api_login
+                check_path: api_login
                 username_path: identifier
                 password_path: password
 
-            login_throttling:
-                max_attempts: 3
+#            login_throttling:
+#                max_attempts: 3
 #                interval: '15 minutes'
 
             # activate different ways to authenticate
@@ -70,6 +70,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
+#        - { path: ^/api, roles: ROLE_USER }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

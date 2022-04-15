@@ -73,9 +73,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         // todo
 
         if (str_contains($identifier, '@')) {
-            $query = $entityManager->createQuery('SELECT u FROM App\Entity\User u u.email = :query');
+            $query = $entityManager->createQuery('SELECT u FROM App\Entity\User u WHERE u.email = :query');
         } else {
-            $query = $entityManager->createQuery('SELECT u FROM App\Entity\User u u.phone = :query');
+            $query = $entityManager->createQuery('SELECT u FROM App\Entity\User u WHERE u.phone = :query');
         }
         return $query
             ->setParameter('query', $identifier)

@@ -21,7 +21,7 @@ class PeopleCleanupCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Deletes rejected and spam people from the database')
@@ -43,6 +43,6 @@ class PeopleCleanupCommand extends Command
 
         $io->success(sprintf('Deleted "%d" old rejected/spam people.', $count));
 
-        return 0;
+        return self::SUCCESS;
     }
 }
