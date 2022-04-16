@@ -8,6 +8,7 @@ use App\Notification\PeopleReviewNotification;
 use App\Repository\PeopleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Notifier\NotifierInterface;
@@ -22,6 +23,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
     private NotifierInterface $notifier;
     private ImageOptimizer $imageOptimizer;
     private string $peoplePhotoDirRealPath;
+    private KernelInterface $kernel;
     private ?LoggerInterface $logger;
 
     public function __construct(
@@ -32,6 +34,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         NotifierInterface      $notifier,
         ImageOptimizer         $imageOptimizer,
         string                 $peoplePhotoDirRealPath,
+        KernelInterface        $kernel,
         LoggerInterface        $logger = null
     )
     {
@@ -42,11 +45,14 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
         $this->notifier = $notifier;
         $this->imageOptimizer = $imageOptimizer;
         $this->peoplePhotoDirRealPath = $peoplePhotoDirRealPath;
+        $this->kernel = $kernel;
         $this->logger = $logger;
     }
 
     public function __invoke(PeopleStateMessage $message)
     {
+        $isEnvTest = $this->kernel->getEnvironment() === 'test';
+
         $peopleId = $message->getId();
 
         $people = $this->peopleRepository->find($peopleId);
@@ -73,17 +79,23 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             $this->bus->dispatch($message);
 
         } elseif ($this->workflow->can($people, 'publish')) {
-            $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
-            $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
-//            $this->workflow->apply($people, 'publish');
-//            $this->entityManager->flush();
-
+            if ($isEnvTest) {
+                $this->workflow->apply($people, 'publish');
+                $this->entityManager->flush();
+                $this->bus->dispatch(new PeopleStateMessage($people->getId(), $message->getReviewUrl()));
+            } else {
+                $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
+                $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
+            }
         } elseif ($this->workflow->can($people, 'publish_ham')) {
-            $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
-            $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
-//            $this->workflow->apply($people, 'publish_ham');
-//            $this->entityManager->flush();
-
+            if ($isEnvTest) {
+                $this->workflow->apply($people, 'publish_ham');
+                $this->entityManager->flush();
+                $this->bus->dispatch(new PeopleStateMessage($people->getId(), $message->getReviewUrl()));
+            } else {
+                $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
+                $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
+            }
         } elseif ($this->workflow->can($people, 'optimize')) {
             $photos = $people->getPhotos();
             if (!$photos->isEmpty()) {

@@ -1,13 +1,20 @@
 ## fixtures/user.yaml
-#App\Entity\User:
-##    User0:
-##        username: admin
-##        email: admin@local.com
-##        enabled: 1
-##        plainPassword: admin
-##        roles: [ ROLE_ADMIN ]
-##        groups: @Group0
-#
+App\Entity\User:
+    User0:
+        email: 'test@test.com'
+        roles: ['ROLE_USER']
+        password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
+#        password: <password()>
+        phone: '79632482761'
+#        phone: <phone()>
+#        people: @People0
+
+    User1:
+        email: 'test1@test.com'
+        roles: ['ROLE_USER']
+        password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
+        phone: '79632482762'
+
 #    user{1..10}:
 #    email: <email()>
 #    roles: [ROLE_USER]

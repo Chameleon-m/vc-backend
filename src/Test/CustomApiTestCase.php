@@ -5,6 +5,7 @@ namespace App\Test;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Client;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -28,7 +29,7 @@ class CustomApiTestCase extends ApiTestCase
             ->hash($password);
         $user->setPassword($hashedPassword);
 
-        $em = self::getContainer()->get('doctrine')->getManager();
+        $em = $this->getEntityManager();
         $em->persist($user);
         $em->flush();
 
@@ -40,14 +41,30 @@ class CustomApiTestCase extends ApiTestCase
      */
     protected function logIn(Client $client, string $identifier, string $password): ResponseInterface
     {
-        $response = $client->request('POST', '/api/login', [
+        return $client->request('POST', '/api/login', [
             'json' => [
                 'identifier' => $identifier,
                 'password' => $password
             ],
         ]);
-        self::assertResponseStatusCodeSame(204);
+    }
 
+    protected function logInCorrect(Client $client, string $identifier, string $password): ResponseInterface
+    {
+        $response = $this->logIn($client, $identifier, $password);
+        self::assertResponseStatusCodeSame(204);
         return $response;
+    }
+
+    protected function logInUnauthorized(Client $client, string $identifier, string $password): ResponseInterface
+    {
+        $response = $this->logIn($client, $identifier, $password);
+        self::assertResponseStatusCodeSame(401);
+        return $response;
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return self::getContainer()->get('doctrine')->getManager();
     }
 }

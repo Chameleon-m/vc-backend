@@ -27,6 +27,7 @@ class AdminController extends AbstractController
         $this->bus = $bus;
     }
 
+    // todo: in api controller for test
     #[Route('/admin/people/review/{id}', name: 'review_people')]
     public function reviewPeople(Request $request, People $people, Registry $registry): Response
     {

@@ -35,13 +35,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'denormalization_context' => ['groups' => 'people:item']
         ],
         'put' => [
-            'security' => "is_granted('ROLE_USER')"
+            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user",
+            'security_message' => 'Only the creator can edit a people'
         ],
         'delete' => [
-            'security' => "is_granted('ROLE_ADMIN')"
+            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user"
         ],
         'patch' => [
-            'security' => "is_granted('ROLE_USER')"
+            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user"
         ]
     ],
     attributes: [
@@ -311,7 +312,8 @@ class People
 
     public function __toString(): string
     {
-        return $this->first_name . ' ' . $this->second_name . ' ' . $this->middle_name;
+        //TODO: unique
+        return $this->first_name . ' ' . $this->second_name . ' ' . $this->middle_name . ' ' . random_int(1, 10000);
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

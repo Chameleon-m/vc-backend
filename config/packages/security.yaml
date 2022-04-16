@@ -30,11 +30,10 @@ security:
             provider: app_admin_provider
             custom_authenticator: App\Security\AppAuthenticator
             logout:
-                path: app_logout
+                path: admin_logout
                 # where to redirect after logout
-                target: app_login
+                target: admin_login
         main:
-#            anonymous: true
 
             lazy: true
             pattern: ^/api
@@ -67,7 +66,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
 #        - { path: ^/api, roles: ROLE_USER }
