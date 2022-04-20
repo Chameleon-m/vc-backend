@@ -87,9 +87,18 @@ class PeopleResourceTest extends CustomApiTestCase
 
         # Incorrect owner
 
-        $this->logInCorrect($client, 'test1@test.com', 'test');
+        $response = $this->logInCorrect($client, 'test1@test.com', 'test');
+        $userCurrentIri = $response->getHeaders()['location'][0];
         $client->request('PUT', $peopleCreatedIri, [
             'json' => ['phone' => '22222222222']
+        ]);
+
+        self::assertResponseStatusCodeSame(403, 'only owner can updated');
+
+        ## change owner
+
+        $client->request('PUT', $peopleCreatedIri, [
+            'json' => ['phone' => '22222222222', 'owner' => $userCurrentIri]
         ]);
 
         self::assertResponseStatusCodeSame(403, 'only owner can updated');

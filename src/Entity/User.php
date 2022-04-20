@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +14,37 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations: [
+        'get' => [
+            'security' => "is_granted('ROLE_USER')"
+        ],
+        'post' => [
+            'security' => "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'security' => "is_granted('ROLE_USER')"
+        ],
+        'put' => [
+            'security' => "is_granted('ROLE_USER') or object == user",
+        ],
+        'delete' => [
+            'security' => "is_granted('ROLE_ADMIN') or object == user"
+        ],
+        'patch' => [
+            'security' => "is_granted('ROLE_ADMIN') or object == user"
+        ]
+    ],
+//    security: "is_granted('ROLE_USER') or object == user",
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+        'email' => 'start',
+        'phone' => 'start',
+    ],
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
