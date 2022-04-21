@@ -35,14 +35,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'denormalization_context' => ['groups' => 'people:item']
         ],
         'put' => [
-            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user",
+            'security' => "is_granted('PEOPLE_ITEM_EDIT', object)",
             'security_message' => 'Only the creator can edit a people'
         ],
         'delete' => [
-            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user"
+            'security' => "is_granted('PEOPLE_ITEM_DELETE', object)"
         ],
         'patch' => [
-            'security' => "is_granted('ROLE_ADMIN') or object.getOwner() == user"
+            'security' => "is_granted('PEOPLE_ITEM_PATCH', object)"
         ]
     ],
     attributes: [
