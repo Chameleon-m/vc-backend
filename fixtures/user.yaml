@@ -15,6 +15,12 @@ App\Entity\User:
         password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
         phone: '79632482762'
 
+    User3:
+        email: 'test3@test.com'
+        roles: ['ROLE_USER']
+        password: '\$2y\$04\$zF6zlp1pMXSXnHz2QdS.cuP9XUsJGb.McoljwaH73oQ9qgrbwgvDG'
+        phone: '79632482764'
+
 #    user{1..10}:
 #    email: <email()>
 #    roles: [ROLE_USER]

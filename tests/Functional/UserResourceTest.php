@@ -11,8 +11,61 @@ class UserResourceTest extends CustomApiTestCase
 
     public function testCreateUser(): void
     {
+        $client = self::createClient();
         $user = $this->createUser('test-n@test.com', '79632482766', 'test');
         self::assertIsInt($user->getId());
+
+        #
+
+        $this->logInCorrect($client, 'test-n@test.com', 'test');
+    }
+
+    public function testCreateUserClient(): void
+    {
+        $this->getEntityManager()->beginTransaction();
+
+        $client = self::createClient();
+        $client->request('POST', '/api/users', [
+            'json' => [
+                'email' => 'test2@test.com',
+                'phone' => '79632482763',
+                'roles' => ["ROLE_USER"],
+                'password' => 'test'
+            ]
+        ]);
+        self::assertResponseStatusCodeSame(201);
+
+        $this->getEntityManager()->commit(); // todo ?
+        #
+
+        $this->logInCorrect($client, 'test2@test.com', 'test');
+    }
+
+    public function testUpdateUser()
+    {
+        $client = self::createClient();
+        $response = $this->logInCorrect($client, 'test2@test.com', 'test');
+        $userCurrentIri = $response->getHeaders()['location'][0];
+
+        $client->request('PUT', $userCurrentIri, [
+            'json' => [
+                'phone' => '79666666666'
+            ]
+        ]);
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertJsonContains(['phone' => '79666666666']);
+
+        #
+
+        $this->logInCorrect($client, 'test3@test.com', 'test');
+
+        $client->request('PUT', $userCurrentIri, [
+            'json' => [
+                'phone' => '79632482763'
+            ]
+        ]);
+        self::assertResponseStatusCodeSame(403);
     }
 
     # TODO: api login test

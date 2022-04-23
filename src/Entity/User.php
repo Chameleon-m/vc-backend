@@ -11,6 +11,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -20,15 +23,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
             'security' => "is_granted('ROLE_USER')"
         ],
         'post' => [
-            'security' => "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')"
+//            'security' => "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
+            'validation_groups' => ["Default", "create"]
         ]
     ],
     itemOperations: [
         'get' => [
-            'security' => "is_granted('ROLE_USER')"
+            'security' => "is_granted('ROLE_ADMIN') or object == user"
         ],
         'put' => [
-            'security' => "is_granted('ROLE_USER') or object == user",
+            'security' => "is_granted('ROLE_ADMIN') or object == user",
         ],
         'delete' => [
             'security' => "is_granted('ROLE_ADMIN') or object == user"
@@ -37,6 +41,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
             'security' => "is_granted('ROLE_ADMIN') or object == user"
         ]
     ],
+    denormalizationContext: ['groups' => ['user:write']],
+    normalizationContext: ['groups' => ['user:read']]
 //    security: "is_granted('ROLE_USER') or object == user",
 )]
 #[ApiFilter(
@@ -53,18 +59,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private $email;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read', 'user:write'])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
     private $password;
 
+    #[Groups(['user:write'])]
+    #[SerializedName('password')]
+    #[Assert\NotBlank(groups: ['create'])]
+    private $plainPassword;
+
     #[ORM\Column(type: 'string', length: 255, unique: true, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private $phone;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: People::class, orphanRemoval: true)]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\Valid]
     private $people;
 
     public function __construct()
@@ -139,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+         $this->plainPassword = null;
     }
 
     public function getPhone(): ?string
@@ -183,4 +201,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
 }
