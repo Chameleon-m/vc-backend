@@ -76,7 +76,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     //https://symfonycasts.com/screencast/api-platform-security/context-builder#making-roles-writeable-by-only-an-admin
-    #[Groups(['admin:write','user:write'])]
+    #[Groups(['admin:write', 'owner:write', 'user:write'])]
     #[SerializedName('password')]
     #[Assert\NotBlank(groups: ['create'])]
     private $plainPassword;
