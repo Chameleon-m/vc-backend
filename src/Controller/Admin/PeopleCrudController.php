@@ -25,30 +25,30 @@ class PeopleCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Человек')
             ->setEntityLabelInPlural('Люди')
-            ->setSearchFields(['first_name', 'second_name', 'middle_name', 'address_residental', 'contacts'])
+            ->setSearchFields(['firstName', 'secondName', 'middleName', 'addressResidental', 'contacts'])
             ->setDefaultSort(['id' => 'DESC']);
     }
 
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(EntityFilter::new('first_name'))
+            ->add(EntityFilter::new('firstName'))
             ->add(EntityFilter::new('phones'))
-            ->add(EntityFilter::new('last_view_addresses'));
+            ->add(EntityFilter::new('lastViewAddresses'));
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id')->hideOnForm();
-        yield TextField::new('second_name', 'Фамилия');
-        yield TextField::new('first_name', 'Имя');
-        yield TextField::new('middle_name', 'Отчество');
-        yield DateTimeField::new('birthday_date', 'Дата рождения')->setFormTypeOptions([
+        yield TextField::new('secondName', 'Фамилия');
+        yield TextField::new('firstName', 'Имя');
+        yield TextField::new('middleName', 'Отчество');
+        yield DateTimeField::new('birthdayDate', 'Дата рождения')->setFormTypeOptions([
             'html5' => true,
 //            'years' => range(date('Y') - 100, date('Y')),
             'widget' => 'single_text',
         ]);
-        yield TextField::new('address_residental', 'Место проживания')
+        yield TextField::new('addressResidental', 'Место проживания')
             ->setHelp('Где человек проживал постоянно.');
         yield ArrayField::new('contacts', 'Контакты для связи')
             ->setHelp('Можно укзать номер, почту, соцсеть и другие контакты');

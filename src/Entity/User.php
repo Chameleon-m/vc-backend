@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\UserRepository;
@@ -41,9 +42,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => "is_granted('ROLE_ADMIN') or object == user"
         ]
     ],
-    denormalizationContext: ['groups' => ['user:write']],
-    normalizationContext: ['groups' => ['user:read']]
 //    security: "is_granted('ROLE_USER') or object == user",
+//    normalizationContext: ['jsonld_embed_context' => true],
 )]
 #[ApiFilter(
     SearchFilter::class, properties: [
@@ -65,13 +65,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $email;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'admin:read', 'admin:write'])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+//    #[ApiProperty(
+//        readableLink: false,
+////        writableLink: false
+//    )]
     private $password;
 
-    #[Groups(['user:write'])]
+    //https://symfonycasts.com/screencast/api-platform-security/context-builder#making-roles-writeable-by-only-an-admin
+    #[Groups(['admin:write','user:write'])]
     #[SerializedName('password')]
     #[Assert\NotBlank(groups: ['create'])]
     private $plainPassword;

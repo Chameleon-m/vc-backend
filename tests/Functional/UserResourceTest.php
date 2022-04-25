@@ -3,6 +3,7 @@
 namespace App\Tests\Functional;
 
 use App\Test\CustomApiTestCase;
+use App\Entity\User;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
 class UserResourceTest extends CustomApiTestCase
@@ -58,6 +59,20 @@ class UserResourceTest extends CustomApiTestCase
 
         #
 
+        $client->request('PUT', $userCurrentIri, [
+            'json' => [
+                'roles' => ['ROLE_ADMIN'] // will be ignored
+            ]
+        ]);
+        self::assertResponseStatusCodeSame(200);
+
+        sscanf($userCurrentIri, '/api/users/%d', $userId);
+        /** @var User $user */
+        $user = $this->getEntityManager()->getRepository(User::class)->find($userId);
+        $this->assertEquals(['ROLE_USER'], $user->getRoles());
+
+        #
+
         $this->logInCorrect($client, 'test3@test.com', 'test');
 
         $client->request('PUT', $userCurrentIri, [
@@ -68,6 +83,33 @@ class UserResourceTest extends CustomApiTestCase
         self::assertResponseStatusCodeSame(403);
     }
 
+    public function testGetUser()
+    {
+        $client = self::createClient();
+        $response = $this->logInCorrect($client, 'test1@test.com', 'test');
+        $userCurrentIri = $response->getHeaders()['location'][0];
+
+        $client->request('GET', $userCurrentIri);
+        self::assertJsonContains([
+            'phone' => '79632482762'
+        ]);
+
+        #
+
+//        $this->logInCorrect($client, 'test3@test.com', 'test');
+//        $response = $client->request('GET', $userCurrentIri);
+//        $data = $response->toArray();
+//
+//        self::assertArrayNotHasKey('phone', $data);
+
+        #
+
+        $this->logInCorrect($client, 'test-admin@test.com', 'test');
+        $client->request('GET', $userCurrentIri);
+        self::assertJsonContains([
+            'phone' => '79632482762'
+        ]);
+    }
     # TODO: api login test
 
     public function testLoginUserEmail(): void

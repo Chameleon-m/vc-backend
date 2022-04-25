@@ -1,15 +1,15 @@
 ## fixtures/people.yaml
 #App\Entity\People:
 #  people{1..10}:
-#    first_name: <firstName()>
-#    second_name: <lastName()>
-#    middle_name: <name()>
-#    birthday_date: <date_create()>
-#    address_residental: <sentence(4)>
+#    firstName: <firstName()>
+#    secondName: <lastName()>
+#    middleName: <name()>
+#    birthdayFate: <date_create()>
+#    addressResidental: <sentence(4)>
 #    contacts: ['<phone()>', '<email()>']
 ##    phones:
 ##    photos:
-##    last_view_addresses:
+##    lastViewSddresses:
 #    createdAt: '<dateTimeBetween("-100 days", "now")>'
 ##    updatedAt: '<dateTimeBetween($createdAt, "now")>'
 #    slug: <uniqid()>

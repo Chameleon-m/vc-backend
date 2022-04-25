@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,8 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: [
         'get' => [
-            'normalization_context' => ['groups' => 'people:list'],
-            'denormalization_context' => ['groups' => 'people:list'],
+//            'security' => "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
         ],
         'post' => [
             'security' => "is_granted('ROLE_USER')"
@@ -31,8 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     itemOperations: [
         'get' => [
-            'normalization_context' => ['groups' => 'people:item'],
-            'denormalization_context' => ['groups' => 'people:item']
+//            'security' => "is_granted('IS_AUTHENTICATED_ANONYMOUSLY')",
         ],
         'put' => [
             'security' => "is_granted('PEOPLE_ITEM_EDIT', object)",
@@ -45,6 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => "is_granted('PEOPLE_ITEM_PATCH', object)"
         ]
     ],
+    shortName: 'people',
     attributes: [
         'pagination_items_per_page' => 10,
         'formats' => ["jsonld", "json", "html", "csv" => ["text/csv"]]
@@ -54,11 +54,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(
     SearchFilter::class, properties: [
-//        'first_name' => 'start',
-        'first_name' => 'exact',
-        'second_name' => 'exact',
-        'middle_name' => 'exact',
-        'last_view_addresses.address' => 'partial'
+//        'firstName' => 'start',
+        'firstName' => 'exact',
+        'secondName' => 'exact',
+        'middleName' => 'exact',
+        'lastViewAddresses.address' => 'partial'
     ],
 )]
 class People
@@ -67,7 +67,6 @@ class People
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['people:list', 'people:item'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -79,68 +78,69 @@ class People
 //        minMessage: '',
 //        maxMessage: ''
     )]
-    #[Groups(['people:list', 'people:item'])]
-    private $first_name;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(max: 255)]
-    #[Groups(['people:list', 'people:item'])]
-    private $second_name;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $secondName;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people:list', 'people:item'])]
-    private $middle_name;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $middleName;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['people:list', 'people:item'])]
-    private $birthday_date;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $birthdayDate;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people:list', 'people:item'])]
-    private $address_residental;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $addressResidental;
 
     #[ORM\Column(type: 'json')]
     #[Assert\NotBlank]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $contacts;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhone::class, orphanRemoval: true)]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $phones;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhoto::class, orphanRemoval: true)]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $photos;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Valid]
     #[ApiSubresource]
-    #[Groups(['people:list', 'people:item'])]
-    private $last_view_addresses;
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $lastViewAddresses;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $slug;
 
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
-    #[Groups(['people:list', 'people:item'])]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $state = 'submitted';
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $owner;
 
     public function __construct()
     {
         $this->phones = new ArrayCollection();
         $this->photos = new ArrayCollection();
-        $this->last_view_addresses = new ArrayCollection();
+        $this->lastViewAddresses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,48 +150,48 @@ class People
 
     public function getFirstName(): ?string
     {
-        return $this->first_name;
+        return $this->firstName;
     }
 
-    public function setFirstName(string $first_name): self
+    public function setFirstName(string $firstName): self
     {
-        $this->first_name = $first_name;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
     public function getSecondName(): ?string
     {
-        return $this->second_name;
+        return $this->secondName;
     }
 
-    public function setSecondName(string $second_name): self
+    public function setSecondName(string $secondName): self
     {
-        $this->second_name = $second_name;
+        $this->secondName = $secondName;
 
         return $this;
     }
 
     public function getMiddleName(): ?string
     {
-        return $this->middle_name;
+        return $this->middleName;
     }
 
-    public function setMiddleName(?string $middle_name): self
+    public function setMiddleName(?string $middleName): self
     {
-        $this->middle_name = $middle_name;
+        $this->middleName = $middleName;
 
         return $this;
     }
 
     public function getAddressResidental(): ?string
     {
-        return $this->address_residental;
+        return $this->addressResidental;
     }
 
-    public function setAddressResidental(?string $address_residental): self
+    public function setAddressResidental(?string $addressResidental): self
     {
-        $this->address_residental = $address_residental;
+        $this->addressResidental = $addressResidental;
 
         return $this;
     }
@@ -210,12 +210,12 @@ class People
 
     public function getBirthdayDate(): ?\DateTimeImmutable
     {
-        return $this->birthday_date;
+        return $this->birthdayDate;
     }
 
-    public function setBirthdayDate(?\DateTimeImmutable $birthday_date): self
+    public function setBirthdayDate(?\DateTimeImmutable $birthdayDate): self
     {
-        $this->birthday_date = $birthday_date;
+        $this->birthdayDate = $birthdayDate;
 
         return $this;
     }
@@ -285,13 +285,13 @@ class People
      */
     public function getLastViewAddresses(): Collection
     {
-        return $this->last_view_addresses;
+        return $this->lastViewAddresses;
     }
 
     public function addLastViewAddress(PeopleAddressLastView $lastViewAddress): self
     {
-        if (!$this->last_view_addresses->contains($lastViewAddress)) {
-            $this->last_view_addresses[] = $lastViewAddress;
+        if (!$this->lastViewAddresses->contains($lastViewAddress)) {
+            $this->lastViewAddresses[] = $lastViewAddress;
             $lastViewAddress->setPeople($this);
         }
 
@@ -300,7 +300,7 @@ class People
 
     public function removeLastViewAddress(PeopleAddressLastView $lastViewAddress): self
     {
-        if ($this->last_view_addresses->removeElement($lastViewAddress)) {
+        if ($this->lastViewAddresses->removeElement($lastViewAddress)) {
             // set the owning side to null (unless already changed)
             if ($lastViewAddress->getPeople() === $this) {
                 $lastViewAddress->setPeople(null);
@@ -313,7 +313,7 @@ class People
     public function __toString(): string
     {
         //TODO: unique
-        return $this->first_name . ' ' . $this->second_name . ' ' . $this->middle_name . ' ' . random_int(1, 10000);
+        return $this->firstName . ' ' . $this->secondName . ' ' . $this->middleName . ' ' . random_int(1, 10000);
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

@@ -41,3 +41,13 @@ services:
             - { name: 'doctrine.orm.entity_listener', event: 'postPersist', entity: 'App\Entity\People' }
 
     Symfony\Component\HttpKernel\HttpCache\StoreInterface: '@http_cache.store'
+
+    App\Serializer\AdminGroupsContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\AdminGroupsContextBuilder.inner' ]
+#        autoconfigure: false
+
+    App\Api\AutoGroupResourceMetadataFactory:
+        decorates: 'api_platform.metadata.resource.metadata_factory'
+        arguments: [ '@App\Api\AutoGroupResourceMetadataFactory.inner' ]
+        decoration_priority: -20

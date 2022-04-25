@@ -15,10 +15,14 @@ use App\Entity\People;
 #[ORM\Entity(repositoryClass: PeopleAddressLastViewRepository::class)]
 #[ApiResource(
     collectionOperations: [
-        'get' => ['normalization_context' => ['groups' => 'people_address_last_view:list']]
+        'get' => [
+//            'normalization_context' => ['groups' => ['people_address_last_view:list']]
+        ]
     ],
     itemOperations: [
-        'get' => ['normalization_context' => ['groups' => 'people_address_last_view:item']]
+        'get' => [
+//            'normalization_context' => ['groups' => ['people_address_last_view:item']]
+        ]
     ],
     order: ['date_start' => 'ASC'],
     paginationEnabled: false,
@@ -30,26 +34,26 @@ class PeopleAddressLastView
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[ApiProperty(identifier: true)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item'])]
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item:read', 'people:item:write'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:list', 'people:item'])]
-    private $locality_value;
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $localityValue;
 
     #[ORM\Column(type: 'smallint')]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:list', 'people:item'])]
-    private $locality_type;
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    private $localityType;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:list', 'people:item'])]
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $address;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item'])]
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item:read', 'people:item:write'])]
     private $note;
 
-    #[ORM\ManyToOne(targetEntity: People::class, inversedBy: 'last_view_addresses')]
+    #[ORM\ManyToOne(targetEntity: People::class, inversedBy: 'lastViewAddresses')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     #[Assert\Type(type: People::class)]
@@ -57,12 +61,12 @@ class PeopleAddressLastView
     private $people;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item'])]
-    private $date_start;
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item:read', 'people:item:write'])]
+    private $dateStart;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item'])]
-    private $date_end;
+    #[Groups(['people_address_last_view:list', 'people_address_last_view:item', 'people:item:read', 'people:item:write'])]
+    private $dateEnd;
 
     public function getId(): ?int
     {
@@ -71,24 +75,24 @@ class PeopleAddressLastView
 
     public function getLocalityValue(): ?string
     {
-        return $this->locality_value;
+        return $this->localityValue;
     }
 
-    public function setLocalityValue(string $locality_value): self
+    public function setLocalityValue(string $localityValue): self
     {
-        $this->locality_value = $locality_value;
+        $this->localityValue = $localityValue;
 
         return $this;
     }
 
     public function getLocalityType(): ?int
     {
-        return $this->locality_type;
+        return $this->localityType;
     }
 
-    public function setLocalityType(int $locality_type): self
+    public function setLocalityType(int $localityType): self
     {
-        $this->locality_type = $locality_type;
+        $this->localityType = $localityType;
 
         return $this;
     }
@@ -131,30 +135,30 @@ class PeopleAddressLastView
 
     public function getDateStart(): ?\DateTimeImmutable
     {
-        return $this->date_start;
+        return $this->dateStart;
     }
 
-    public function setDateStart(?\DateTimeImmutable $date_start): self
+    public function setDateStart(?\DateTimeImmutable $dateStart): self
     {
-        $this->date_start = $date_start;
+        $this->dateStart = $dateStart;
 
         return $this;
     }
 
     public function getDateEnd(): ?\DateTimeImmutable
     {
-        return $this->date_end;
+        return $this->dateEnd;
     }
 
-    public function setDateEnd(?\DateTimeImmutable $date_end): self
+    public function setDateEnd(?\DateTimeImmutable $dateEnd): self
     {
-        $this->date_end = $date_end;
+        $this->dateEnd = $dateEnd;
 
         return $this;
     }
 
     public function __toString(): string
     {
-        return $this->locality_value . ' ' . $this->address;
+        return $this->localityValue . ' ' . $this->address;
     }
 }
