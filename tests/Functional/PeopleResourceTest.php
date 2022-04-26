@@ -116,7 +116,19 @@ class PeopleResourceTest extends CustomApiTestCase
     public function testGetPeopleCollection(): void
     {
         $client = self::createClient();
-        $response = $client->request('GET', '/api/people');
+        $client->request('GET', '/api/people');
         self::assertJsonContains(['hydra:totalItems' => 8]);
     }
+
+//    public function testGetPeopleItem()
+//    {
+//        $client = self::createClient();
+//        $client->request('GET', '/api/people/'.$people->getId());
+//        self::assertResponseStatusCodeSame(200);
+//
+//        #
+//
+//        $client->request('GET', '/api/people/'.$peopleStateNotPublished->getId());
+//        self::assertResponseStatusCodeSame(404);
+//    }
 }

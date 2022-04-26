@@ -86,7 +86,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $phone;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: People::class, orphanRemoval: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:write', 'admin:read', 'admin:write'])]
     #[Assert\Valid]
     private $people;
 
@@ -183,6 +183,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPeople(): Collection
     {
         return $this->people;
+    }
+
+    /**
+     * @Groups({"user:read"})
+     * @SerializedName("people")
+     * @return Collection<int, People>
+     */
+    public function getPeoplePublished(): Collection
+    {
+        // https://symfonycasts.com/screencast/doctrine-relations/collection-criteria
+        return $this->people->filter(function(People $people) {
+            return $people->getState() === 'published';
+        });
     }
 
     public function addPerson(People $person): self
