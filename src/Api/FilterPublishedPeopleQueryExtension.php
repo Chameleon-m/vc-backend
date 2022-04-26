@@ -19,7 +19,8 @@ class FilterPublishedPeopleQueryExtension implements QueryCollectionExtensionInt
     {
         if (People::class === $resourceClass) {
 //            if ($operationName === 'get') {
-                $qb->andWhere(sprintf("%s.state = 'published'", $qb->getRootAliases()[0]));
+            $qb->andWhere(sprintf("%s.state = :state", $qb->getRootAliases()[0]))
+                ->setParameter('state', 'published');
 //            }
         }
     }
@@ -35,7 +36,8 @@ class FilterPublishedPeopleQueryExtension implements QueryCollectionExtensionInt
     {
         if (People::class === $resourceClass) {
 //            if ($operationName === 'get') {
-                $qb->andWhere(sprintf("%s.state = 'published'", $qb->getRootAliases()[0]));
+                $qb->andWhere(sprintf("%s.state = :state", $qb->getRootAliases()[0]))
+                    ->setParameter('state', 'published');
 //            }
         }
     }

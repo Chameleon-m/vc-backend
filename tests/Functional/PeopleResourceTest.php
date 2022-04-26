@@ -12,21 +12,26 @@ class PeopleResourceTest extends CustomApiTestCase
 {
     use RefreshDatabaseTrait;
 
-    private function createPeople(Client $client, string $userCurrentIri): ResponseInterface
+    private function createPeople(Client $client, string $userCurrentIri = null): ResponseInterface
     {
-        $response = $client->request('POST', '/api/people', [
-            'json' => [
-                'firstName' => 'FirstName',
-                'secondName' => 'SecondName',
-                'middleName' => 'MiddleName',
-                'birthdayDate' => '2022-04-15',
-                'addressResidental' => 'addressResidental',
-                'contacts' => ['79632482762', 'test-n@test.com'],
-                'owner' => $userCurrentIri,
+        $data = [
+            'firstName' => 'FirstName',
+            'secondName' => 'SecondName',
+            'middleName' => 'MiddleName',
+            'birthdayDate' => '2022-04-15',
+            'addressResidental' => 'addressResidental',
+            'contacts' => ['79632482762', 'test-n@test.com'],
 //                'phones' => [],
 //                'photos' => [],
 //                'lastViewAddresses' => [],
-            ],
+        ];
+
+        if ($userCurrentIri) {
+            $data['owner'] = $userCurrentIri;
+        }
+
+        $response = $client->request('POST', '/api/people', [
+            'json' => $data,
         ]);
 
         self::assertResponseStatusCodeSame(201);
@@ -34,7 +39,7 @@ class PeopleResourceTest extends CustomApiTestCase
         return $response;
     }
 
-    private function createPeopleIri(Client $client, string $userCurrentIri): string
+    private function createPeopleIri(Client $client, string $userCurrentIri = null): string
     {
         $response = $this->createPeople($client, $userCurrentIri);
         return $response->getHeaders()['location'][0];
@@ -53,16 +58,20 @@ class PeopleResourceTest extends CustomApiTestCase
     public function testCreatePeopleLogin(): void
     {
         $client = self::createClient();
-        $response = $this->logInCorrect($client, 'test@test.com', 'test');
+        $response = $this->logInCorrect($client, 'test0@test.com', 'test');
         $userCurrentIri = $response->getHeaders()['location'][0];
 
-        $peopleCreatedIri = $this->createPeopleIri($client, $userCurrentIri);
+        $this->createPeopleIri($client, $userCurrentIri);
+
+        #
+
+        $this->createPeopleIri($client);
     }
 
     public function testCreatePeopleEmptyData(): void
     {
         $client = self::createClient();
-        $this->logInCorrect($client, 'test@test.com', 'test');
+        $this->logInCorrect($client, 'test0@test.com', 'test');
 
         $client->request('POST', '/api/people', [
             'json' => [],
@@ -73,7 +82,7 @@ class PeopleResourceTest extends CustomApiTestCase
     public function testUpdatePeople(): void
     {
         $client = self::createClient();
-        $response = $this->logInCorrect($client, 'test@test.com', 'test');
+        $response = $this->logInCorrect($client, 'test0@test.com', 'test');
         $userCurrentIri = $response->getHeaders()['location'][0];
 
         $peopleCreatedIri = $this->createPeopleIri($client, $userCurrentIri);
@@ -102,5 +111,12 @@ class PeopleResourceTest extends CustomApiTestCase
         ]);
 
         self::assertResponseStatusCodeSame(403, 'only owner can updated');
+    }
+
+    public function testGetPeopleCollection(): void
+    {
+        $client = self::createClient();
+        $response = $client->request('GET', '/api/people');
+        self::assertJsonContains(['hydra:totalItems' => 8]);
     }
 }

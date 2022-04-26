@@ -28,8 +28,8 @@ class UserResourceTest extends CustomApiTestCase
         $client = self::createClient();
         $client->request('POST', '/api/users', [
             'json' => [
-                'email' => 'test2@test.com',
-                'phone' => '79632482763',
+                'email' => 'test5@test.com',
+                'phone' => '79632482766',
                 'roles' => ["ROLE_USER"],
                 'password' => 'test'
             ]
@@ -39,13 +39,13 @@ class UserResourceTest extends CustomApiTestCase
         $this->getEntityManager()->commit(); // todo ?
         #
 
-        $this->logInCorrect($client, 'test2@test.com', 'test');
+        $this->logInCorrect($client, 'test5@test.com', 'test');
     }
 
     public function testUpdateUser()
     {
         $client = self::createClient();
-        $response = $this->logInCorrect($client, 'test2@test.com', 'test');
+        $response = $this->logInCorrect($client, 'test5@test.com', 'test');
         $userCurrentIri = $response->getHeaders()['location'][0];
 
         $client->request('PUT', $userCurrentIri, [
@@ -77,7 +77,7 @@ class UserResourceTest extends CustomApiTestCase
 
         $client->request('PUT', $userCurrentIri, [
             'json' => [
-                'phone' => '79632482763'
+                'phone' => '79632482766'
             ]
         ]);
         self::assertResponseStatusCodeSame(403);
@@ -115,7 +115,7 @@ class UserResourceTest extends CustomApiTestCase
     public function testLoginUserEmail(): void
     {
         $client = self::createClient();
-        $this->logInCorrect($client, 'test@test.com', 'test');
+        $this->logInCorrect($client, 'test0@test.com', 'test');
     }
 
     public function testLoginUserIncorrectEmail(): void

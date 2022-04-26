@@ -1,17 +1,18 @@
 ## fixtures/people.yaml
-#App\Entity\People:
-#  people{1..10}:
-#    firstName: <firstName()>
-#    secondName: <lastName()>
-#    middleName: <name()>
-#    birthdayFate: <date_create()>
-#    addressResidental: <sentence(4)>
-#    contacts: ['<phone()>', '<email()>']
-##    phones:
-##    photos:
-##    lastViewSddresses:
+App\Entity\People:
+  people{1..5}:
+    firstName: <ru_RU:firstName()>
+    secondName: <ru_RU:lastName()>
+    middleName: <ru_RU:name()>
+    birthdayDate: <(new \DateTimeImmutable('1999-01-08'))>
+    addressResidental: <ru_RU:address()>
+    contacts: ['<ru_RU:phoneNumber()>', '<ru_RU:e164PhoneNumber()>', '<ru_RU:email()>']
+#    phones:
+#    photos:
+#    lastViewAddresses:
 #    createdAt: '<dateTimeBetween("-100 days", "now")>'
-##    updatedAt: '<dateTimeBetween($createdAt, "now")>'
-#    slug: <uniqid()>
-#    state: 'submitted'
-#    owner: '@user_*'
+    createdAt: <(new \DateTimeImmutable())>
+#    updatedAt: '<dateTimeBetween($createdAt, "now")>'
+    slug: <uniqid()>
+    state: 'submitted'
+    owner: '@User3'

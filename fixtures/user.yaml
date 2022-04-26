@@ -1,12 +1,12 @@
 ## fixtures/user.yaml
 App\Entity\User:
     User0:
-        email: 'test@test.com'
+        email: 'test0@test.com'
         roles: ['ROLE_USER']
         password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
 #        password: <password()>
         phone: '79632482761'
-#        phone: <phone()>
+#        phone: <ru_RU:e164PhoneNumber()>
 #        people: @People0
 
     User1:
@@ -14,6 +14,12 @@ App\Entity\User:
         roles: ['ROLE_USER']
         password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
         phone: '79632482762'
+
+    User2:
+        email: 'test2@test.com'
+        roles: ['ROLE_USER']
+        password: '\$2y\$04\$05xhfWNG/jjiMwwEua5pW.rqsAWoua6WlGMV4hFbXvv3PbaUvPeWW'
+        phone: '79632482763'
 
     User3:
         email: 'test3@test.com'
@@ -27,7 +33,7 @@ App\Entity\User:
         password: '\$2y\$04\$zF6zlp1pMXSXnHz2QdS.cuP9XUsJGb.McoljwaH73oQ9qgrbwgvDG'
         phone: '79632482765'
 
-#    user{1..10}:
+#    User{5..10}:
 #    email: <email()>
 #    roles: [ROLE_USER]
 ##    roles: <randomElements(['ROLE_ADMIN', 'ROLE_USER', 'ROLE_PROFILE_ONE', 'ROLE_PROFILE_TWO'], 2)>
