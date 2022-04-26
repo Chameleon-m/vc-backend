@@ -51,3 +51,6 @@ services:
         decorates: 'api_platform.metadata.resource.metadata_factory'
         arguments: [ '@App\Api\AutoGroupResourceMetadataFactory.inner' ]
         decoration_priority: -20
+
+    App\Doctrine\PeopleSetOwnerListener:
+        tags: [ doctrine.orm.entity_listener ]

@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\PeopleRepository;
+use App\Validator\IsValidOwner;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +17,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Doctrine\PeopleSetOwnerListener;
 
+#[ORM\EntityListeners([PeopleSetOwnerListener::class])]
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('slug')]
@@ -120,20 +123,21 @@ class People
     private $lastViewAddresses;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    #[Groups(['people:read', 'admin:write'])]
     private $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    #[Groups(['people:read', 'admin:write'])]
     private $slug;
 
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    #[Groups(['people:read', 'admin:write'])]
     private $state = 'submitted';
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
+    #[Groups(['people:read', 'people:collection:post', 'admin:write'])]
+    #[IsValidOwner]
     private $owner;
 
     public function __construct()
