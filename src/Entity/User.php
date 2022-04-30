@@ -185,6 +185,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->people;
     }
 
+    // @ApiProperty(readableLink=true)
     /**
      * @Groups({"user:read"})
      * @SerializedName("people")

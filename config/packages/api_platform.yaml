@@ -1,6 +1,8 @@
 # symfony console debug:config api_platform
 # symfony console config:dump api_platform
 api_platform:
+    # https://symfonycasts.com/screencast/api-platform-extending/custom-resource#customizing-the-resource-url
+    path_segment_name_generator: api_platform.path_segment_name_generator.dash
 
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
