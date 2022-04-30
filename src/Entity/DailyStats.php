@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Action\NotFoundAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\ApiPlatform\DailyStatsDateFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
@@ -28,6 +30,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     paginationItemsPerPage: 5,
 )]
+#[ApiFilter(DailyStatsDateFilter::class, arguments: ["throwOnInvalid" => true])]
 class DailyStats
 {
     #[Groups(['daily-stats:read'])]

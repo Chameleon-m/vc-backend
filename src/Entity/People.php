@@ -65,7 +65,7 @@ use App\Doctrine\PeopleSetOwnerListener;
         'lastViewAddresses.address' => 'partial'
     ],
 )]
-#[ApiFilter(PeopleSearchFilter::class)]
+#[ApiFilter(PeopleSearchFilter::class, arguments: ["useLike" => true])]
 class People
 {
     #[ORM\Id]
@@ -355,7 +355,7 @@ class People
     public function computeSlug(SluggerInterface $slugger)
     {
         if (!$this->slug || '-' === $this->slug) {
-            $this->slug = (string) $slugger->slug((string) $this)->lower();
+            $this->slug = (string)$slugger->slug((string)$this)->lower();
         }
     }
 
