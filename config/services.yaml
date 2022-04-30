@@ -47,9 +47,9 @@ services:
         arguments: [ '@App\Serializer\AdminGroupsContextBuilder.inner' ]
 #        autoconfigure: false
 
-    App\Api\AutoGroupResourceMetadataFactory:
+    App\ApiPlatform\AutoGroupResourceMetadataFactory:
         decorates: 'api_platform.metadata.resource.metadata_factory'
-        arguments: [ '@App\Api\AutoGroupResourceMetadataFactory.inner' ]
+        arguments: [ '@App\ApiPlatform\AutoGroupResourceMetadataFactory.inner' ]
         decoration_priority: -20
 
     App\Doctrine\PeopleSetOwnerListener:

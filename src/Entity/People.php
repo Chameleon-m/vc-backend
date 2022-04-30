@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\ApiPlatform\PeopleSearchFilter;
 use App\Repository\PeopleRepository;
 use App\Validator\IsValidOwner;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -64,6 +65,7 @@ use App\Doctrine\PeopleSetOwnerListener;
         'lastViewAddresses.address' => 'partial'
     ],
 )]
+#[ApiFilter(PeopleSearchFilter::class)]
 class People
 {
     #[ORM\Id]

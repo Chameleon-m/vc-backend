@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api;
+namespace App\ApiPlatform;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
