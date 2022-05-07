@@ -25,10 +25,10 @@ class UserNormalizer implements ContextAwareNormalizerInterface, CacheableSuppor
      * @param User $object
      * @param $format
      * @param array $context
-     * @return array
+     * @return array|string
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function normalize($object, $format = null, array $context = array()): array
+    public function normalize($object, $format = null, array $context = array()): array|string
     {
         $isOwner = $this->userIsOwner($object);
         if ($isOwner) {
@@ -38,8 +38,9 @@ class UserNormalizer implements ContextAwareNormalizerInterface, CacheableSuppor
         $context[self::ALREADY_CALLED] = true;
 
         $data = $this->normalizer->normalize($object, $format, $context);
-
-        $data['isMe'] = $isOwner;
+        if (is_array($data)) {
+            $data['isMe'] = $isOwner;
+        }
 
         return $data;
     }

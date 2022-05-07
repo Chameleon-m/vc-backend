@@ -8,16 +8,15 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\ApiPlatform\PeopleSearchFilter;
+use App\Dto\PeopleInput;
+use App\Dto\PeopleOutput;
 use App\Repository\PeopleRepository;
 use App\Validator\IsValidOwner;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Doctrine\PeopleSetOwnerListener;
 
 #[ORM\EntityListeners([PeopleSetOwnerListener::class])]
@@ -53,7 +52,9 @@ use App\Doctrine\PeopleSetOwnerListener;
         'pagination_items_per_page' => 10,
         'formats' => ["jsonld", "json", "html", "csv" => ["text/csv"]]
     ],
+    input: PeopleInput::class,
     order: ['id' => 'DESC'],
+    output: PeopleOutput::class,
     paginationEnabled: true
 )]
 #[ApiFilter(
@@ -75,70 +76,44 @@ class People
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Length(
-        min: 3,
-        max: 255,
-//        minMessage: '',
-//        maxMessage: ''
-    )]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Length(max: 255)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $secondName;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $middleName;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $birthdayDate;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $addressResidental;
 
     #[ORM\Column(type: 'json')]
-    #[Assert\NotBlank]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $contacts;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhone::class, orphanRemoval: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $phones;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhoto::class, orphanRemoval: true)]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $photos;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, cascade: ['persist'], orphanRemoval: true)]
-    #[Assert\Valid]
     #[ApiSubresource]
-    #[Groups(['people:collection:read', 'people:collection:write', 'people:item:read', 'people:item:write'])]
     private $lastViewAddresses;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups(['people:read', 'admin:write'])]
     private $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Groups(['people:read', 'admin:write'])]
     private $slug;
 
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
-    #[Groups(['people:read', 'admin:write'])]
     private $state = 'submitted';
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['people:read', 'people:collection:post', 'admin:write'])]
     #[IsValidOwner]
     private $owner;
 
@@ -352,7 +327,7 @@ class People
         return $this;
     }
 
-    public function computeSlug(SluggerInterface $slugger)
+    public function computeSlug(SluggerInterface $slugger): void
     {
         if (!$this->slug || '-' === $this->slug) {
             $this->slug = (string)$slugger->slug((string)$this)->lower();

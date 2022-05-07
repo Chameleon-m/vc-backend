@@ -186,6 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     // @ApiProperty(readableLink=true)
+    // @ApiProperty(readableLink=false) for IRI
     /**
      * @Groups({"user:read"})
      * @SerializedName("people")

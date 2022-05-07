@@ -23,10 +23,12 @@ class DailyStatsPersister implements DataPersisterInterface
 
     /**
      * @param DailyStats $data
+     * @return DailyStats
      */
-    public function persist($data)
+    public function persist($data): DailyStats
     {
         $this->logger->info(sprintf('Update the visitors to "%d"', $data->totalVisitors));
+        return $data;
     }
 
     public function remove($data)

@@ -63,3 +63,7 @@ services:
         bind:
             $collectionDataProvider: '@api_platform.doctrine.orm.default.collection_data_provider'
             $itemDataProvider: '@api_platform.doctrine.orm.default.item_data_provider'
+
+    'App\DataTransformer\PeopleOutputDataTransformer': ~
+        # Uncomment only if autoconfiguration is disabled
+        #tags: [ 'api_platform.data_transformer' ]
