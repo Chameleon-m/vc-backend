@@ -3,69 +3,43 @@
 //namespace App\Serializer\Normalizer;
 //
 //use App\Dto\PeopleInput;
-//use App\Entity\People;
 //use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 //use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
-//use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-//use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+//use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+//use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
+//use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 //
-//class PeopleInputDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
+//class PeopleInputDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
 //{
-//    private ObjectNormalizer $objectNormalizer;
+//    use DenormalizerAwareTrait;
 //
-//    public function __construct(ObjectNormalizer $objectNormalizer)
-//    {
-//        $this->objectNormalizer = $objectNormalizer;
-//    }
+//    private const ALREADY_CALLED = 'PEOPLE_DENORMALIZER_ALREADY_CALLED';
 //
 //    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
 //    {
 //        $context[AbstractNormalizer::OBJECT_TO_POPULATE] = $this->createDto($context);
+//        $context[self::ALREADY_CALLED] = true;
 //
-//        return $this->objectNormalizer->denormalize($data, $type, $format, $context);
+//        return $this->denormalizer->denormalize($data, $type, $format, $context);
 //    }
 //
-//    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+//    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
 //    {
+//        // avoid recursion: only call once per object
+//        if (isset($context[self::ALREADY_CALLED])) {
+//            return false;
+//        }
 //        return $type === PeopleInput::class;
 //    }
 //
 //    public function hasCacheableSupportsMethod(): bool
 //    {
-//        return true;
+//        return false;
 //    }
 //
-//    /**
-//     * @throws \Exception
-//     */
 //    private function createDto(array $context): PeopleInput
 //    {
 //        $entity = $context[AbstractNormalizer::OBJECT_TO_POPULATE] ?? null;
-//
-//        $dto = new PeopleInput();
-//        // not an edit, so just return an empty DTO
-//        if (!$entity) {
-//            return $dto;
-//        }
-//
-//        if (!$entity instanceof People) {
-//            throw new \RuntimeException(sprintf('Unexpected resource class "%s"', get_class($entity)));
-//        }
-//
-//        $dto->firstName = $entity->getFirstName();
-//        $dto->secondName = $entity->getSecondName();
-//        $dto->middleName = $entity->getMiddleName();
-//        $dto->birthdayDate = $entity->getBirthdayDate();
-//        $dto->addressResidental = $entity->getAddressResidental();
-//        $dto->contacts = $entity->getContacts();
-//        $dto->phones = $entity->getPhones();
-//        $dto->photos = $entity->getPhotos();
-//        $dto->lastViewAddresses = $entity->getLastViewAddresses();
-//        $dto->createdAt = $entity->getCreatedAt();
-//        $dto->slug = $entity->getSlug();
-//        $dto->state = $entity->getState();
-//        $dto->owner = $entity->getOwner();
-//
-//        return $dto;
+//        return PeopleInput::createFromEntity($entity);
 //    }
 //}

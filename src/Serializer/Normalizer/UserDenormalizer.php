@@ -5,10 +5,11 @@ namespace App\Serializer\Normalizer;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 
-class UserDenormalizer implements DenormalizerInterface, CacheableSupportsMethodInterface
+class UserDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
 {
     use DenormalizerAwareTrait;
 
@@ -43,7 +44,7 @@ class UserDenormalizer implements DenormalizerInterface, CacheableSupportsMethod
         return $data;
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         // avoid recursion: only call once per object
         if (isset($context[self::ALREADY_CALLED])) {

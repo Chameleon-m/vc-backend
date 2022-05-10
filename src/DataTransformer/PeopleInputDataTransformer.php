@@ -5,14 +5,20 @@ namespace App\DataTransformer;
 use ApiPlatform\Core\DataTransformer\DataTransformerInitializerInterface;
 use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
 use ApiPlatform\Core\Serializer\AbstractItemNormalizer;
+use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Dto\PeopleInput;
 use App\Entity\People;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
-class PeopleInputDataTransformer implements
-    DataTransformerInterface,
-    DataTransformerInitializerInterface
+class PeopleInputDataTransformer implements DataTransformerInterface, DataTransformerInitializerInterface
 {
+    private ValidatorInterface $validator;
+
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
     /**
      * @param PeopleInput $input
      * @param string $to
@@ -21,6 +27,7 @@ class PeopleInputDataTransformer implements
      */
     public function transform($input, string $to, array $context = []): People
     {
+        $this->validator->validate($input);
         $people = $context[AbstractItemNormalizer::OBJECT_TO_POPULATE] ?? null;
 
         return $input->createOrUpdateEntity($people);

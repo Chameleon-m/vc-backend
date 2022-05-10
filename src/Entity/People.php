@@ -114,7 +114,6 @@ class People
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
     #[ORM\JoinColumn(nullable: false)]
-    #[IsValidOwner]
     private $owner;
 
     public function __construct()
