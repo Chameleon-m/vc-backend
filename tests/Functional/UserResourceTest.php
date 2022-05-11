@@ -5,6 +5,7 @@ namespace App\Tests\Functional;
 use App\Test\CustomApiTestCase;
 use App\Entity\User;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
+use Symfony\Component\Uid\Uuid;
 
 class UserResourceTest extends CustomApiTestCase
 {
@@ -42,6 +43,28 @@ class UserResourceTest extends CustomApiTestCase
         $this->logInCorrect($client, 'test5@test.com', 'test');
     }
 
+    public function testCreateUserWithUuid()
+    {
+        $client = self::createClient();
+
+        $uuid = Uuid::v4();
+
+        $client->request('POST', '/api/users', [
+            'json' => [
+                'uuid' => $uuid,
+                'email' => 'test6@test.com',
+                'phone' => '79632482767',
+                'roles' => ["ROLE_USER"],
+                'password' => 'test'
+            ]
+        ]);
+
+        self::assertResponseStatusCodeSame(201);
+        self::assertJsonContains([
+            '@id' => '/api/users/'.$uuid
+        ]);
+    }
+
     public function testUpdateUser()
     {
         $client = self::createClient();
@@ -66,9 +89,9 @@ class UserResourceTest extends CustomApiTestCase
         ]);
         self::assertResponseStatusCodeSame(200);
 
-        sscanf($userCurrentIri, '/api/users/%d', $userId);
+        sscanf($userCurrentIri, '/api/users/%s', $uuid);
         /** @var User $user */
-        $user = $this->getEntityManager()->getRepository(User::class)->find($userId);
+        $user = $this->getEntityManager()->getRepository(User::class)->findOneBy(['uuid' => $uuid]);
         $this->assertEquals(['ROLE_USER'], $user->getRoles());
 
         #

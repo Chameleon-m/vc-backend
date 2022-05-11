@@ -6,16 +6,21 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\UuidListener;
+use App\Doctrine\UuidListenerInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
+//#[ORM\HasLifecycleCallbacks]
+#[ORM\EntityListeners([UuidListener::class])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
@@ -51,11 +56,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         'phone' => 'start',
     ],
 )]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, UuidListenerInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[ApiProperty(identifier: false)]
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
@@ -89,6 +95,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:write', 'admin:read', 'admin:write'])]
     #[Assert\Valid]
     private $people;
+
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[Groups(['user:read', 'user:collection:post'])]
+    #[ApiProperty(identifier: true)]
+    #[SerializedName("id")]
+//    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+//    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private $uuid;
 
     public function __construct()
     {
@@ -233,4 +247,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): self
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+
+//    #[ORM\PrePersist]
+//    public function setUuidValue()
+//    {
+//        $this->uuid = Uuid::v6();
+//    }
 }

@@ -24,6 +24,7 @@ when@test:
 #            url: '%env(resolve:DATABASE_TEST_URL)%'
             # "TEST_TOKEN" is typically set by ParaTest
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+#            schema_filter: ~^(?!doctrine_migration_versions)~
 
 when@prod:
     doctrine:

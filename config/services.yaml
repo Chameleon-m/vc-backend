@@ -55,6 +55,9 @@ services:
     App\Doctrine\PeopleSetOwnerListener:
         tags: [ doctrine.orm.entity_listener ]
 
+    App\Doctrine\UuidListener:
+        tags: [ doctrine.orm.entity_listener ]
+
     App\DataPersister\UserDataPersister:
         bind:
             $decoratedDataPersister: '@api_platform.doctrine.orm.data_persister'
@@ -67,3 +70,9 @@ services:
     'App\DataTransformer\PeopleOutputDataTransformer': ~
         # Uncomment only if autoconfiguration is disabled
         #tags: [ 'api_platform.data_transformer' ]
+
+    # https://symfony.com/doc/current/components/uid.html#generating-and-inspecting-uuids-ulids-in-the-console
+#    Symfony\Component\Uid\Command\GenerateUlidCommand: ~
+    Symfony\Component\Uid\Command\GenerateUuidCommand: ~
+#    Symfony\Component\Uid\Command\InspectUlidCommand: ~
+#    Symfony\Component\Uid\Command\InspectUuidCommand: ~

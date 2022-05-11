@@ -8,18 +8,20 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\ApiPlatform\PeopleSearchFilter;
+use App\Doctrine\UuidListener;
+use App\Doctrine\UuidListenerInterface;
 use App\Dto\PeopleInput;
 use App\Dto\PeopleOutput;
 use App\Repository\PeopleRepository;
-use App\Validator\IsValidOwner;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Doctrine\PeopleSetOwnerListener;
 
-#[ORM\EntityListeners([PeopleSetOwnerListener::class])]
+#[ORM\EntityListeners([PeopleSetOwnerListener::class, UuidListener::class])]
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('slug')]
@@ -67,12 +69,12 @@ use App\Doctrine\PeopleSetOwnerListener;
     ],
 )]
 #[ApiFilter(PeopleSearchFilter::class, arguments: ["useLike" => true])]
-class People
+class People implements UuidListenerInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    #[ApiProperty(identifier: true)]
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    #[ApiProperty(identifier: false)]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -116,11 +118,18 @@ class People
     #[ORM\JoinColumn(nullable: false)]
     private $owner;
 
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ApiProperty(identifier: true)]
+//    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+//    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    private $uuid;
+
     public function __construct()
     {
         $this->phones = new ArrayCollection();
         $this->photos = new ArrayCollection();
         $this->lastViewAddresses = new ArrayCollection();
+//        $this->uuid = Uuid::uuid4();
     }
 
     public function getId(): ?int
@@ -354,6 +363,17 @@ class People
     {
         $this->owner = $owner;
 
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): self
+    {
+        $this->uuid = $uuid;
         return $this;
     }
 }

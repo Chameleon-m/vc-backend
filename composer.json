@@ -30,6 +30,7 @@
         "symfony/rate-limiter": "6.0.*",
         "symfony/runtime": "6.0.*",
         "symfony/telegram-notifier": "6.0.*",
+        "symfony/uid": "6.0.*",
         "symfony/workflow": "6.0.*",
         "symfony/yaml": "6.0.*"
     },
