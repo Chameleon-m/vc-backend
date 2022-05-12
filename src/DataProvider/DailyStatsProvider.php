@@ -12,18 +12,16 @@ use App\Service\StatsHelper;
 
 class DailyStatsProvider implements ContextAwareCollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface
 {
-    private StatsHelper $statsHelper;
-    private Pagination $pagination;
-
-    public function __construct(StatsHelper $statsHelper, Pagination $pagination)
+    public function __construct(
+        private StatsHelper $statsHelper,
+        private Pagination $pagination
+    )
     {
-        $this->statsHelper = $statsHelper;
-        $this->pagination = $pagination;
     }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
-        list($page, $offset, $limit) = $this->pagination->getPagination($resourceClass, $operationName, $context);
+        [$page, $offset, $limit] = $this->pagination->getPagination($resourceClass, $operationName, $context);
         $paginator = new DailyStatsPaginator(
             $this->statsHelper,
             $page,

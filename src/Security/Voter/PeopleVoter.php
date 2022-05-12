@@ -14,11 +14,8 @@ class PeopleVoter extends Voter
     public const DELETE = 'PEOPLE_ITEM_DELETE';
     public const PATCH = 'PEOPLE_ITEM_PATCH';
 
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     /**

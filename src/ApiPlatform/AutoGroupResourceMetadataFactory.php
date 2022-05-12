@@ -7,11 +7,10 @@ use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 
 class AutoGroupResourceMetadataFactory implements ResourceMetadataFactoryInterface
 {
-    private ResourceMetadataFactoryInterface $decorated;
-
-    public function __construct(ResourceMetadataFactoryInterface $decorated)
+    public function __construct(
+        private ResourceMetadataFactoryInterface $decorated
+    )
     {
-        $this->decorated = $decorated;
     }
 
     public function create(string $resourceClass): ResourceMetadata

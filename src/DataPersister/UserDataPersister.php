@@ -12,22 +12,13 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class UserDataPersister implements ContextAwareDataPersisterInterface
 {
-    private DataPersisterInterface $decoratedDataPersister;
-    private PasswordHasherFactoryInterface $userPasswordEncoder;
-    private LoggerInterface $logger;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        DataPersisterInterface $decoratedDataPersister,
-        PasswordHasherFactoryInterface $userPasswordEncoder,
-        LoggerInterface $logger,
-        EntityManagerInterface $entityManager
+        private DataPersisterInterface $decoratedDataPersister,
+        private PasswordHasherFactoryInterface $userPasswordEncoder,
+        private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager
     )
     {
-        $this->decoratedDataPersister = $decoratedDataPersister;
-        $this->userPasswordEncoder = $userPasswordEncoder;
-        $this->logger = $logger;
-        $this->entityManager = $entityManager;
     }
 
     public function supports($data, array $context = []): bool

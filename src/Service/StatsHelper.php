@@ -7,11 +7,8 @@ use App\Repository\PeopleRepository;
 
 class StatsHelper
 {
-    private PeopleRepository $peopleRepository;
-
-    public function __construct(PeopleRepository $peopleRepository)
+    public function __construct(private PeopleRepository $peopleRepository)
     {
-        $this->peopleRepository = $peopleRepository;
     }
 
     /**
@@ -24,7 +21,7 @@ class StatsHelper
      * @return array|DailyStats[]
      * @throws \Exception
      */
-    public function fetchMany(int $limit = null, int $offset = null, array $criteria = [])
+    public function fetchMany(int $limit = null, int $offset = null, array $criteria = []): array
     {
         $fromDate = $criteria['from'] ?? null;
         $toDate = $criteria['to'] ?? null;
@@ -75,14 +72,17 @@ class StatsHelper
         return count($this->fetchStatsData());
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function fetchStatsData(): array
     {
-        $statsData = json_decode(file_get_contents(__DIR__.'/fake_stats.json'), true);
+        $statsData = json_decode(file_get_contents(__DIR__ . '/fake_stats.json'), true, 512, JSON_THROW_ON_ERROR);
 
         return $statsData['stats'];
     }
 
-    private function getRandomItems(array $items, int $max)
+    private function getRandomItems(array $items, int $max): array
     {
         if ($max > count($items)) {
             shuffle($items);

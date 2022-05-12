@@ -6,11 +6,8 @@ use Symfony\Component\Uid\Factory\UuidFactory;
 
 class UuidListener
 {
-    private UuidFactory $uuidGenerator;
-
-    public function __construct(UuidFactory $uuidGenerator)
+    public function __construct(private UuidFactory $uuidGenerator)
     {
-        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function prePersist($entity): void

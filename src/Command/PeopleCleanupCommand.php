@@ -10,14 +10,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class PeopleCleanupCommand extends Command
 {
-    private PeopleRepository $peopleRepository;
-
     protected static $defaultName = 'app:people:cleanup';
 
-    public function __construct(PeopleRepository $peopleRepository)
+    public function __construct(
+        private PeopleRepository $peopleRepository
+    )
     {
-        $this->peopleRepository = $peopleRepository;
-
         parent::__construct();
     }
 

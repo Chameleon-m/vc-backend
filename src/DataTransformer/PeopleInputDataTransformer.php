@@ -12,11 +12,8 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class PeopleInputDataTransformer implements DataTransformerInterface, DataTransformerInitializerInterface
 {
-    private ValidatorInterface $validator;
-
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**

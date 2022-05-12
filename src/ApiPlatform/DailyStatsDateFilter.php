@@ -11,13 +11,11 @@ class DailyStatsDateFilter implements FilterInterface
 {
     public const FROM_FILTER_CONTEXT = 'daily_stats_from';
 
-    private bool $throwOnInvalid;
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger, bool $throwOnInvalid = false)
+    public function __construct(
+        private LoggerInterface $logger,
+        private bool $throwOnInvalid = false
+    )
     {
-        $this->throwOnInvalid = $throwOnInvalid;
-        $this->logger = $logger;
     }
 
     public function apply(Request $request, bool $normalization, array $attributes, array &$context)

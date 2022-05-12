@@ -16,37 +16,18 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 final class PeopleStateMessageHandler implements MessageHandlerInterface
 {
-    private EntityManagerInterface $entityManager;
-    private PeopleRepository $peopleRepository;
-    private MessageBusInterface $bus;
-    private WorkflowInterface $workflow;
-    private NotifierInterface $notifier;
-    private ImageOptimizer $imageOptimizer;
-    private string $peoplePhotoDirRealPath;
-    private KernelInterface $kernel;
-    private ?LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        PeopleRepository       $peopleRepository,
-        MessageBusInterface    $bus,
-        WorkflowInterface      $peopleStateMachine,
-        NotifierInterface      $notifier,
-        ImageOptimizer         $imageOptimizer,
-        string                 $peoplePhotoDirRealPath,
-        KernelInterface        $kernel,
-        LoggerInterface        $logger = null
+        private EntityManagerInterface $entityManager,
+        private PeopleRepository       $peopleRepository,
+        private MessageBusInterface    $bus,
+        private WorkflowInterface      $peopleStateMachine,
+        private NotifierInterface      $notifier,
+        private ImageOptimizer         $imageOptimizer,
+        private string                 $peoplePhotoDirRealPath,
+        private KernelInterface        $kernel,
+        private ?LoggerInterface       $logger = null
     )
     {
-        $this->entityManager = $entityManager;
-        $this->peopleRepository = $peopleRepository;
-        $this->bus = $bus;
-        $this->workflow = $peopleStateMachine;
-        $this->notifier = $notifier;
-        $this->imageOptimizer = $imageOptimizer;
-        $this->peoplePhotoDirRealPath = $peoplePhotoDirRealPath;
-        $this->kernel = $kernel;
-        $this->logger = $logger;
     }
 
     public function __invoke(PeopleStateMessage $message)
@@ -61,7 +42,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
             return;
         }
 
-        if ($this->workflow->can($people, 'accept')) {
+        if ($this->peopleStateMachine->can($people, 'accept')) {
 
             $transition = 'accept';
 
@@ -73,30 +54,30 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
 //                $transition = 'might_be_spam';
 //            }
 
-            $this->workflow->apply($people, $transition);
+            $this->peopleStateMachine->apply($people, $transition);
             $this->entityManager->flush();
 
             $this->bus->dispatch($message);
 
-        } elseif ($this->workflow->can($people, 'publish')) {
+        } elseif ($this->peopleStateMachine->can($people, 'publish')) {
             if ($isEnvTest) {
-                $this->workflow->apply($people, 'publish');
+                $this->peopleStateMachine->apply($people, 'publish');
                 $this->entityManager->flush();
                 $this->bus->dispatch(new PeopleStateMessage($people->getId(), $message->getReviewUrl()));
             } else {
                 $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
                 $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
             }
-        } elseif ($this->workflow->can($people, 'publish_ham')) {
+        } elseif ($this->peopleStateMachine->can($people, 'publish_ham')) {
             if ($isEnvTest) {
-                $this->workflow->apply($people, 'publish_ham');
+                $this->peopleStateMachine->apply($people, 'publish_ham');
                 $this->entityManager->flush();
                 $this->bus->dispatch(new PeopleStateMessage($people->getId(), $message->getReviewUrl()));
             } else {
                 $notification = new PeopleReviewNotification($people, $message->getReviewUrl());
                 $this->notifier->send($notification, ...$this->notifier->getAdminRecipients());
             }
-        } elseif ($this->workflow->can($people, 'optimize')) {
+        } elseif ($this->peopleStateMachine->can($people, 'optimize')) {
             $photos = $people->getPhotos();
             if (!$photos->isEmpty()) {
                 foreach ($photos as $photo) {
@@ -105,7 +86,7 @@ final class PeopleStateMessageHandler implements MessageHandlerInterface
                     $this->imageOptimizer->resize($photoPath, $photoResizePath);
                 }
             }
-            $this->workflow->apply($people, 'optimize');
+            $this->peopleStateMachine->apply($people, 'optimize');
             $this->entityManager->flush();
 
         } elseif ($this->logger) {

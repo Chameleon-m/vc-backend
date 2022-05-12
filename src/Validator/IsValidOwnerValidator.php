@@ -9,9 +9,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class IsValidOwnerValidator extends ConstraintValidator
 {
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     public function validate(mixed $value, Constraint $constraint): void

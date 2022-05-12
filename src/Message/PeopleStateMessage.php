@@ -4,15 +4,12 @@ namespace App\Message;
 
 final class PeopleStateMessage
 {
-    private int $id;
-    private string $reviewUrl;
-    private array $context;
-
-    public function __construct(int $id, string $reviewUrl, array $context = [])
+    public function __construct(
+        private int $id,
+        private string $reviewUrl,
+        private array $context = []
+    )
     {
-        $this->id = $id;
-        $this->reviewUrl = $reviewUrl;
-        $this->context = $context;
     }
 
     public function getReviewUrl(): string

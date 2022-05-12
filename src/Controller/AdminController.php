@@ -18,13 +18,11 @@ use Symfony\Component\Workflow\Registry;
 //#[Route('/admin')]
 class AdminController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-    private MessageBusInterface $bus;
-
-    public function __construct(EntityManagerInterface $entityManager, MessageBusInterface $bus)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $bus
+    )
     {
-        $this->entityManager = $entityManager;
-        $this->bus = $bus;
     }
 
     // todo: in api controller for test

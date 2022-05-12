@@ -15,15 +15,12 @@ class UserDataProvider implements
     DenormalizedIdentifiersAwareItemDataProviderInterface,
     RestrictedDataProviderInterface
 {
-    private CollectionDataProviderInterface $collectionDataProvider;
-    private Security $security;
-    private ItemDataProviderInterface $itemDataProvider;
-
-    public function __construct(CollectionDataProviderInterface $collectionDataProvider, ItemDataProviderInterface $itemDataProvider, Security $security)
+    public function __construct(
+        private CollectionDataProviderInterface $collectionDataProvider,
+        private ItemDataProviderInterface $itemDataProvider,
+        private Security $security
+    )
     {
-        $this->collectionDataProvider = $collectionDataProvider;
-        $this->security = $security;
-        $this->itemDataProvider = $itemDataProvider;
     }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable

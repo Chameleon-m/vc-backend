@@ -15,15 +15,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 
 class PeoplePhotoCrudController extends AbstractCrudController
 {
-    private string $uploadBasePath;
-    private string $uploadDir;
-    private string $peoplePhotoDir;
-
-    public function __construct(string $uploadBasePath, string $uploadDir, string $peoplePhotoDir)
+    public function __construct(
+        private string $uploadBasePath,
+        private string $uploadDir,
+        private string $peoplePhotoDir
+    )
     {
-        $this->uploadBasePath = $uploadBasePath;
-        $this->uploadDir = $uploadDir;
-        $this->peoplePhotoDir = $peoplePhotoDir;
     }
 
     public static function getEntityFqcn(): string

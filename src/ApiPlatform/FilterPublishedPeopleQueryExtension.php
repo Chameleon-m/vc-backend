@@ -11,11 +11,10 @@ use Symfony\Component\Security\Core\Security;
 
 class FilterPublishedPeopleQueryExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(
+        private Security $security
+    )
     {
-        $this->security = $security;
     }
 
     public function applyToCollection(

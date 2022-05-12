@@ -11,18 +11,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PeopleEntityListener
 {
-    private SluggerInterface $slugger;
-    private MessageBusInterface $bus;
-    private UrlGeneratorInterface $router;
-
     public function __construct(
-        SluggerInterface $slugger,
-        MessageBusInterface $bus,
-        UrlGeneratorInterface $router
+        private SluggerInterface $slugger,
+        private MessageBusInterface $bus,
+        private UrlGeneratorInterface $router
     ) {
-        $this->slugger = $slugger;
-        $this->bus = $bus;
-        $this->router = $router;
     }
 
     public function prePersist(People $people, LifecycleEventArgs $event): void

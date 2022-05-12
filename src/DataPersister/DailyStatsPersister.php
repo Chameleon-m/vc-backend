@@ -9,11 +9,8 @@ use Psr\Log\LoggerInterface;
 
 class DailyStatsPersister implements DataPersisterInterface
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function supports($data): bool

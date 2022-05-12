@@ -9,20 +9,15 @@ use ArrayIterator;
 
 class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
 {
-    private $dailyStatsIterator;
-    private StatsHelper $statsHelper;
-    private int $currentPage;
-    private int $maxResults;
-    /**
-     * @var \DateTimeInterface|null
-     */
-    private $fromDate;
+    private ?Traversable $dailyStatsIterator;
+    private ?\DateTimeInterface $fromDate;
 
-    public function __construct(StatsHelper $statsHelper, int $currentPage, int $maxResults)
+    public function __construct(
+        private StatsHelper $statsHelper,
+        private int $currentPage,
+        private int $maxResults
+    )
     {
-        $this->statsHelper = $statsHelper;
-        $this->currentPage = $currentPage;
-        $this->maxResults = $maxResults;
     }
 
     public function count(): int
@@ -71,7 +66,7 @@ class DailyStatsPaginator implements PaginatorInterface, \IteratorAggregate
         return $this->dailyStatsIterator;
     }
 
-    public function setFromDate(\DateTimeInterface $fromDate)
+    public function setFromDate(\DateTimeInterface $fromDate): void
     {
         $this->fromDate = $fromDate;
     }

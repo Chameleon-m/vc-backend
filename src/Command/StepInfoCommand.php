@@ -12,11 +12,10 @@ class StepInfoCommand extends Command
 {
     protected static $defaultName = 'app:step:info';
 
-    private CacheInterface $cache;
-
-    public function __construct(CacheInterface $cache)
+    public function __construct(
+        private CacheInterface $cache
+    )
     {
-        $this->cache = $cache;
         parent::__construct();
     }
 

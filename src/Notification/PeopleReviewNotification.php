@@ -13,14 +13,11 @@ use Symfony\Component\Notifier\Recipient\RecipientInterface;
 
 class PeopleReviewNotification extends Notification implements ChatNotificationInterface
 {
-    private People $people;
-    private string $reviewUrl;
-
-    public function __construct(People $people, string $reviewUrl)
+    public function __construct(
+        private People $people,
+        private string $reviewUrl
+    )
     {
-        $this->people = $people;
-        $this->reviewUrl = $reviewUrl;
-
         parent::__construct('New people posted');
     }
 

@@ -15,10 +15,8 @@ class UserDenormalizer implements ContextAwareDenormalizerInterface, Denormalize
 
     private const ALREADY_CALLED = 'USER_DENORMALIZER_ALREADY_CALLED';
 
-    private Security $security;
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     /**
