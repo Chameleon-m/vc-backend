@@ -75,54 +75,54 @@ class People implements UuidListenerInterface
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
     #[ApiProperty(identifier: false)]
-    private $id;
+    private int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $firstName;
+    private ?string $firstName = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $secondName;
+    private ?string $secondName = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $middleName;
+    private ?string $middleName;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    private $birthdayDate;
+    private ?\DateTimeImmutable $birthdayDate;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $addressResidental;
+    private ?string $addressResidental;
 
     #[ORM\Column(type: 'json')]
-    private $contacts;
+    private ?array $contacts = null;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhone::class, orphanRemoval: true)]
-    private $phones;
+    private Collection $phones;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeoplePhoto::class, orphanRemoval: true)]
-    private $photos;
+    private Collection $photos;
 
     #[ORM\OneToMany(mappedBy: 'people', targetEntity: PeopleAddressLastView::class, cascade: ['persist'], orphanRemoval: true)]
     #[ApiSubresource]
-    private $lastViewAddresses;
+    private Collection $lastViewAddresses;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    private $slug;
+    private ?string $slug = null;
 
     #[ORM\Column(type: 'string', length: 255, options: ["default" => "submitted"])]
-    private $state = 'submitted';
+    private string $state = 'submitted';
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'people')]
     #[ORM\JoinColumn(nullable: false)]
-    private $owner;
+    private ?User $owner = null;
 
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ApiProperty(identifier: true)]
 //    #[ORM\GeneratedValue(strategy: "CUSTOM")]
 //    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private $uuid;
+    private ?Uuid $uuid = null;
 
     public function __construct()
     {
@@ -337,8 +337,8 @@ class People implements UuidListenerInterface
 
     public function computeSlug(SluggerInterface $slugger): void
     {
-        if (!$this->slug || '-' === $this->slug) {
-            $this->slug = (string)$slugger->slug((string)$this)->lower();
+        if (!$this->getSlug() || '-' === $this->getSlug()) {
+            $this->setSlug((string)$slugger->slug((string)$this)->lower());
         }
     }
 

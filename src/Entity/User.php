@@ -62,39 +62,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UuidLis
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[ApiProperty(identifier: false)]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     #[Assert\NotBlank]
     #[Assert\Email]
-    private $email;
+    private ?string $email = null;
 
     #[ORM\Column(type: 'json')]
     #[Groups(['user:read', 'admin:read', 'admin:write'])]
-    private $roles = [];
+    private array $roles = [];
 
     #[ORM\Column(type: 'string')]
 //    #[ApiProperty(
 //        readableLink: false,
 ////        writableLink: false
 //    )]
-    private $password;
+    private ?string $password = null;
 
     //https://symfonycasts.com/screencast/api-platform-security/context-builder#making-roles-writeable-by-only-an-admin
     #[Groups(['admin:write', 'owner:write', 'user:write'])]
     #[SerializedName('password')]
     #[Assert\NotBlank(groups: ['create'])]
-    private $plainPassword;
+    private ?string $plainPassword = null;
 
     #[ORM\Column(type: 'string', length: 255, unique: true, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
-    private $phone;
+    private ?string $phone = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: People::class, orphanRemoval: true)]
     #[Groups(['user:write', 'admin:read', 'admin:write'])]
     #[Assert\Valid]
-    private $people;
+    private Collection $people;
 
     #[ORM\Column(type: 'uuid', unique: true)]
     #[Groups(['user:read', 'user:collection:post'])]
@@ -102,7 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UuidLis
     #[SerializedName("id")]
 //    #[ORM\GeneratedValue(strategy: "CUSTOM")]
 //    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    private $uuid;
+    private ?Uuid $uuid = null;
 
     public function __construct()
     {
